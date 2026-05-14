@@ -124,7 +124,7 @@ export default function App({ user, onLogout }) {
         iban: parsed.iban || "",
         communication: parsed.communication || "",
       }));
-      showToast("Infos extraites !");
+      showToast("F:" + (parsed.fournisseur||"vide") + " M:" + (parsed.montant||"vide"));
     } catch (err) {
       showToast("Erreur scan: " + err.message, "err");
     }
