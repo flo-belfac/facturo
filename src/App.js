@@ -98,19 +98,35 @@ export default function App({ user, onLogout }) {
     reader.readAsDataURL(file);
   };
 
+  const compressImage = (dataUrl) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let w = img.width, h = img.height;
+      const max = 1200;
+      if (w > max) { h = Math.round(h * max / w); w = max; }
+      if (h > max) { w = Math.round(w * max / h); h = max; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", 0.75));
+    };
+    img.src = dataUrl;
+  });
+
   const scanFacture = async () => {
     if (!previewImg) return;
     setScanning(true);
     try {
-      const base64 = previewImg.split(",")[1];
-      const mediaType = previewImg.split(";")[0].split(":")[1];
+      const compressed = await compressImage(previewImg);
+      const base64 = compressed.split(",")[1];
+      const mediaType = "image/jpeg";
       const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-facture`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${SUPABASE_KEY}`,
         },
-        body: JSON.stringify({ image: base64, mediaType })
+        body: JSON.stringify({ image: base64, mediaType: "image/jpeg" })
       });
       const parsed = await res.json();
       if (parsed.error) throw new Error(parsed.error);
