@@ -113,17 +113,20 @@ export default function App({ user, onLogout }) {
         body: JSON.stringify({ image: base64, mediaType })
       });
       const parsed = await res.json();
+      if (parsed.error) throw new Error(parsed.error);
       setScanResult(parsed);
-      setForm({
+      setForm(prev => ({
+        ...prev,
         fournisseur: parsed.fournisseur || "",
         description: parsed.description || "",
-        montant: parsed.montant?.toString() || "",
+        montant: parsed.montant != null ? String(parsed.montant) : "",
         date: parsed.date_echeance || parsed.date_facture || "",
         iban: parsed.iban || "",
         communication: parsed.communication || "",
-      });
-    } catch {
-      showToast("Erreur scan, remplissez manuellement", "err");
+      }));
+      showToast("Infos extraites !");
+    } catch (err) {
+      showToast("Erreur scan: " + err.message, "err");
     }
     setScanning(false);
   };

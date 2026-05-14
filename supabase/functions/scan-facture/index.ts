@@ -25,17 +25,17 @@ Deno.serve(async (req) => {
           role: 'user',
           content: [
             { type: 'image_url', image_url: { url: `data:${mediaType};base64,${image}` } },
-            { type: 'text', text: `Analyse cette facture et extrait ces informations en JSON uniquement (sans markdown) :
+            { type: 'text', text: `Analyse cette facture et extrait ces informations en JSON uniquement sans markdown :
 {
-  "fournisseur": "nom société/service",
+  "fournisseur": "nom societe",
   "description": "description courte",
   "montant": nombre en euros sans symbole,
   "date_echeance": "YYYY-MM-DD ou null",
   "date_facture": "YYYY-MM-DD ou null",
-  "iban": "IBAN du bénéficiaire ou null",
-  "communication": "communication structurée ou référence de paiement ou null"
+  "iban": "IBAN ou null",
+  "communication": "communication ou null"
 }
-Réponds UNIQUEMENT avec le JSON.` }
+Reponds UNIQUEMENT avec le JSON.` }
           ]
         }]
       })
