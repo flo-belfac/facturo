@@ -643,9 +643,9 @@ export default function App({ user, onLogout }) {
             <div style={S.modalTitle}>Ajouter une facture</div>
             <div style={{color:"#8a8070",fontSize:13,marginBottom:18}}>Comment voulez-vous importer votre facture ?</div>
             {[
-              {icon:<Camera size={26} color="#00FF88"/>,title:"Prendre une photo",sub:"Ouvre l'appareil photo",fn:()=>cameraRef.current.click()},
-              {icon:<Image size={26} color="#00FF88"/>,title:"Depuis la galerie",sub:"Choisir une photo existante",fn:()=>fileRef.current.click()},
-              {icon:<Pen size={26} color="#00FF88"/>,title:"Saisie manuelle",sub:"Entrer les infos a la main",fn:()=>{setPreviewImg(null);setScanResult(null);setForm({fournisseur:"",description:"",montant:"",date:"",iban:"",communication:""});setSourceModal(false);setView("scan");}},
+              {icon:"📷",title:"Prendre une photo",sub:"Ouvre l'appareil photo",fn:()=>cameraRef.current.click()},
+              {icon:"🖼️",title:"Depuis la galerie",sub:"Choisir une photo existante",fn:()=>fileRef.current.click()},
+              {icon:"✏️",title:"Saisie manuelle",sub:"Entrer les infos a la main",fn:()=>{setPreviewImg(null);setScanResult(null);setForm({fournisseur:"",description:"",montant:"",date:"",iban:"",communication:""});setSourceModal(false);setView("scan");}},
             ].map(({icon,title,sub,fn}) => (
               <button key={title} style={S.srcBtn} className="btn" onClick={fn}>
                 <span style={{fontSize:28,flexShrink:0}}>{icon}</span>
