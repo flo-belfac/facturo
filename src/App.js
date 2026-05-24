@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { Home, BarChart2, Bell, ArrowLeft, X, Paperclip, Camera, Image, Pen, CheckCircle, Trash2, Plus, Copy, Check, Search } from "lucide-react";
 
 const STORAGE_KEY = "payday-factures-v1";
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://jihdihqgyvtzboqwuzmr.supabase.co";
@@ -248,7 +247,7 @@ export default function App({ user, onLogout }) {
             <button style={S.backBtn} onClick={() => {
               if (dossierFilter) { setDossierFilter(null); return; }
               setView("list"); setSelected(null); setTab("infos");
-            }}><ArrowLeft size={16}/></button>
+            }}>←</button>
           )}
           <div style={{animation:"float 4s ease-in-out infinite"}}>
             <div style={{...S.logo,background:"linear-gradient(90deg,#00FF88,#00FFCC,#00FF88)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:"shimmer 2s linear infinite"}}>PayDay</div>
@@ -305,14 +304,14 @@ export default function App({ user, onLogout }) {
 
             {/* SEARCH */}
             <div style={{position:"relative",marginBottom:12}}>
-              <Search size={15} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#4a7a5a"}}/>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4a7a5a" strokeWidth="2" style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)"}}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               <input
                 style={{...S.inp,paddingLeft:36,fontSize:13}}
                 placeholder="Rechercher une facture..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
-              {search && <button onClick={() => setSearch("")} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",cursor:"pointer",color:"#4a7a5a"}}><X size={14}/></button>}
+              {search && <button onClick={() => setSearch("")} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",cursor:"pointer",color:"#4a7a5a"}}>✕</button>}
             </div>
 
             {/* FILTERS */}
@@ -339,7 +338,7 @@ export default function App({ user, onLogout }) {
 
             {listeAffichee.length === 0 ? (
               <div style={S.empty}>
-                <div style={{marginBottom:14,opacity:0.4}}><BarChart2 size={52} color="#00FF88"/></div>
+                <div style={{marginBottom:14,opacity:0.4}}><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#00FF88" strokeWidth="1.5"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg></div>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:24,marginBottom:8}}>Aucune facture</div>
                 <div style={{color:"#6B7280",fontSize:14,marginBottom:24}}>Appuyez sur Ajouter pour commencer</div>
                 <button style={{...S.addBtn,padding:"12px 28px"}} className="btn" onClick={() => setSourceModal(true)}>Ajouter une facture</button>
@@ -362,7 +361,7 @@ export default function App({ user, onLogout }) {
                         {f.statut}
                       </span>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                        {f.annexes?.length > 0 && <span style={{fontSize:11,color:"#8a8070"}}><Paperclip size={12} style={{marginRight:3}}/>{f.annexes.length}</span>}
+                        {f.annexes?.length > 0 && <span style={{fontSize:11,color:"#8a8070"}}>📎 {f.annexes.length}</span>}
                         {f.rappel && <span style={{fontSize:13,color:"#00FF88"}}>🔔</span>}
                         {f.date && <span style={{fontSize:12,color:urgent?"#FC8181":"#8a8070"}}>{urgent?"⚠ ":""}{fmtDate(f.date)}</span>}
                       </div>
@@ -469,7 +468,7 @@ export default function App({ user, onLogout }) {
                           {f.rappelJours > 0 && <div style={{color:"#8a8070",fontSize:12,marginTop:2}}>{f.rappelJours} jours avant</div>}
                         </div>
                         <button style={{background:"transparent",border:"none",color:"#FC8181",fontSize:18,cursor:"pointer"}}
-                          onClick={() => updateFacture(f.id,{rappel:null,rappelJours:null})}><X size={14}/></button>
+                          onClick={() => updateFacture(f.id,{rappel:null,rappelJours:null})}>✕</button>
                       </div>
                     ) : (
                       <button style={{...S.ghostBtn,width:"100%"}} className="btn" onClick={() => setRappelModal(true)}>+ Definir un rappel</button>
@@ -575,7 +574,7 @@ export default function App({ user, onLogout }) {
 
                   {(!f.annexes || f.annexes.length===0) ? (
                     <div style={{textAlign:"center",padding:"36px 20px",color:"#6B7280"}}>
-                      <div style={{marginBottom:10,opacity:0.3}}><Paperclip size={40} color="#00FF88"/></div>
+                      <div style={{marginBottom:10,opacity:0.3}}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00FF88" strokeWidth="1.5"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
                       <div>Aucune annexe</div>
                     </div>
                   ) : (
@@ -587,7 +586,7 @@ export default function App({ user, onLogout }) {
                             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                               <span style={{fontSize:12,color:"#8a8070"}}>{a.name}</span>
                               <button style={{background:"transparent",border:"none",color:"#FC8181",cursor:"pointer"}}
-                                onClick={() => updateFacture(f.id,{annexes:f.annexes.filter((_,j)=>j!==i)})}><X size={14}/></button>
+                                onClick={() => updateFacture(f.id,{annexes:f.annexes.filter((_,j)=>j!==i)})}>✕</button>
                             </div>
                           </div>
                         )}
@@ -598,7 +597,7 @@ export default function App({ user, onLogout }) {
                               <div style={{fontSize:14,color:"#F5F0E8"}}>{a.data}</div>
                             </div>
                             <button style={{background:"transparent",border:"none",color:"#FC8181",cursor:"pointer",marginLeft:10}}
-                              onClick={() => updateFacture(f.id,{annexes:f.annexes.filter((_,j)=>j!==i)})}><X size={14}/></button>
+                              onClick={() => updateFacture(f.id,{annexes:f.annexes.filter((_,j)=>j!==i)})}>✕</button>
                           </div>
                         )}
                         {a.type==="plan" && (
@@ -625,14 +624,14 @@ export default function App({ user, onLogout }) {
       {/* NAV */}
       {view === "list" && !dossierFilter && (
         <div style={S.nav}>
-          <button style={{...S.navBtn,color:"#00FF88"}}><Home size={20}/><br/><span style={{fontSize:10}}>Accueil</span></button>
+          <button style={{...S.navBtn,color:"#00FF88"}}>⌂<br/><span style={{fontSize:10}}>Accueil</span></button>
           <button style={S.navBtn} onClick={() => showToast(`${factures.filter(f=>f.statut!=="payee").length} factures — ${fmt(totalImpaye)} a payer`)}>
             📊<br/><span style={{fontSize:10}}>Resume</span>
           </button>
           <button style={S.navBtn} onClick={() => {
             const r=factures.filter(f=>f.rappel).length;
             showToast(r>0?`${r} rappel(s) actif(s)`:"Aucun rappel defini");
-          }}><Bell size={20}/><br/><span style={{fontSize:10}}>Rappels</span></button>
+          }}>🔔<br/><span style={{fontSize:10}}>Rappels</span></button>
         </div>
       )}
 
