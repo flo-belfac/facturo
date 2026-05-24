@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 
-const STORAGE_KEY = "factures-v2";
-const SUPABASE_URL = "https://jihdihqgyvtzboqwuzmr.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppaGRpaHFneXZ0emJvcXd1em1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjc4NjIsImV4cCI6MjA5MzkwMzg2Mn0.Bs8d_crq6hKkAYQlXR2CCZdCk4HoLKgTNMgU-kla714";
+const STORAGE_KEY = "payday-factures-v1";
+const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://jihdihqgyvtzboqwuzmr.supabase.co";
+const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppaGRpaHFneXZ0emJvcXd1em1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjc4NjIsImV4cCI6MjA5MzkwMzg2Mn0.Bs8d_crq6hKkAYQlXR2CCZdCk4HoLKgTNMgU-kla714";
 
 const statusColors = {
-  impayee:        { bg: "rgba(252,129,129,0.15)", text: "#FC8181", dot: "#FC8181" },
-  "plan paiement":{ bg: "rgba(99,179,237,0.15)",  text: "#63B3ED", dot: "#63B3ED" },
-  payee:          { bg: "rgba(104,211,145,0.15)",  text: "#68D391", dot: "#68D391" },
+  impayee:         { bg: "rgba(252,129,129,0.15)", text: "#FC8181", dot: "#FC8181" },
+  "plan paiement": { bg: "rgba(99,179,237,0.15)",  text: "#63B3ED", dot: "#63B3ED" },
+  payee:           { bg: "rgba(104,211,145,0.15)",  text: "#68D391", dot: "#68D391" },
 };
 
 const fmt = (a) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(a || 0);
@@ -50,16 +50,17 @@ export default function App({ user, onLogout }) {
   const annexeFileRef = useRef();
 
   useEffect(() => {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) setFactures(JSON.parse(data));
-  } catch {}
-}, []);
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) setFactures(JSON.parse(data));
+    } catch {}
+  }, []);
 
-const save = (data) => {
-  setFactures(data);
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
-};
+  const save = (data) => {
+    setFactures(data);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  };
+
   const showToast = (msg, type = "ok") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
@@ -220,7 +221,7 @@ const save = (data) => {
   return (
     <div style={S.app}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600;700&family=DM+Sans:wght@300;400;500&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:3px}
         ::-webkit-scrollbar-thumb{background:#2a2010;border-radius:4px}
@@ -228,6 +229,7 @@ const save = (data) => {
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
         @keyframes tin{from{transform:translateY(70px);opacity:0}to{transform:translateY(0);opacity:1}}
         @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
         .hov:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)!important}
         .btn:hover{filter:brightness(1.1)}
         input,select{outline:none}
@@ -243,9 +245,9 @@ const save = (data) => {
               setView("list"); setSelected(null); setTab("infos");
             }}>←</button>
           )}
-          <div>
-            <div style={S.logo}>🧾 Facturo</div>
-            {view === "list" && !dossierFilter && <div style={S.sub}>Gestion de factures</div>}
+          <div style={{animation:"float 4s ease-in-out infinite"}}>
+            <div style={S.logo}>💸 PayDay</div>
+            {view === "list" && !dossierFilter && <div style={S.sub}>Vos factures, sous contrôle</div>}
             {dossierFilter && <div style={S.sub}>📁 {dossierFilter}</div>}
           </div>
         </div>
@@ -300,8 +302,8 @@ const save = (data) => {
 
             {listeAffichee.length === 0 ? (
               <div style={S.empty}>
-                <div style={{fontSize:52,marginBottom:14}}>🧾</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:20,marginBottom:8}}>Aucune facture</div>
+                <div style={{fontSize:52,marginBottom:14}}>💸</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:24,marginBottom:8}}>Aucune facture</div>
                 <div style={{color:"#6B7280",fontSize:14,marginBottom:24}}>Appuyez sur Ajouter pour commencer</div>
                 <button style={{...S.addBtn,padding:"12px 28px"}} className="btn" onClick={() => setSourceModal(true)}>Ajouter une facture</button>
               </div>
@@ -313,8 +315,8 @@ const save = (data) => {
                   <div key={f.id} style={{...S.card,borderLeft:`3px solid ${urgent?"#FC8181":statusColors[f.statut]?.dot||"#D4AF37"}`,opacity:f.statut==="payee"?.6:1}}
                     className="hov" onClick={() => { setSelected(f); setTab("infos"); setView("detail"); }}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:5}}>
-                      <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:15,textDecoration:f.statut==="payee"?"line-through":"none"}}>{f.fournisseur}</div>
-                      <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:16,color:"#D4AF37"}}>{fmt(f.montant)}</div>
+                      <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:17,textDecoration:f.statut==="payee"?"line-through":"none"}}>{f.fournisseur}</div>
+                      <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:18,color:"#D4AF37"}}>{fmt(f.montant)}</div>
                     </div>
                     {f.description && <div style={{fontSize:13,color:"#8a8070",marginBottom:8}}>{f.description}</div>}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
@@ -349,7 +351,7 @@ const save = (data) => {
                   </button>
                 )}
                 {scanning && <div style={{textAlign:"center",color:"#D4AF37",padding:"12px 0",animation:"pulse 1.2s infinite"}}>Analyse en cours...</div>}
-                {scanResult && <div style={{textAlign:"center",color:"#68D391",padding:"8px 0",fontSize:13}}>Informations extraites</div>}
+                {scanResult && <div style={{textAlign:"center",color:"#68D391",padding:"8px 0",fontSize:13}}>Informations extraites ✓</div>}
               </div>
             )}
 
@@ -399,12 +401,12 @@ const save = (data) => {
                 {f.image && <img src={f.image} alt="" style={{width:"100%",borderRadius:10,maxHeight:140,objectFit:"contain",marginBottom:12,background:"#111"}} />}
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
                   <div>
-                    <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:22,textDecoration:f.statut==="payee"?"line-through":"none"}}>{f.fournisseur}</div>
+                    <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:24,textDecoration:f.statut==="payee"?"line-through":"none"}}>{f.fournisseur}</div>
                     {f.description && <div style={{color:"#8a8070",fontSize:13,marginTop:2}}>{f.description}</div>}
                   </div>
                   <span style={{...S.badge,...(statusColors[f.statut]||statusColors.impayee),fontSize:12,flexShrink:0,marginLeft:8}}>{f.statut}</span>
                 </div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:34,color:"#D4AF37",margin:"8px 0 6px"}}>{fmt(f.montant)}</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#D4AF37",margin:"8px 0 6px"}}>{fmt(f.montant)}</div>
                 {f.date && (
                   <div style={{color:urgent?"#FC8181":"#8a8070",fontSize:13}}>
                     Echeance : {fmtDate(f.date)} {days!==null?`(${days===0?"Aujourd'hui":days<0?`En retard de ${Math.abs(days)}j`:`J-${days}`})`:""}
@@ -587,7 +589,7 @@ const save = (data) => {
       {view === "list" && !dossierFilter && (
         <div style={S.nav}>
           <button style={{...S.navBtn,color:"#D4AF37"}}>🏠<br/><span style={{fontSize:10}}>Accueil</span></button>
-          <button style={S.navBtn} onClick={() => showToast(`${factures.filter(f=>f.statut!=="payee").length} factures - ${fmt(totalImpaye)} a payer`)}>
+          <button style={S.navBtn} onClick={() => showToast(`${factures.filter(f=>f.statut!=="payee").length} factures — ${fmt(totalImpaye)} a payer`)}>
             📊<br/><span style={{fontSize:10}}>Resume</span>
           </button>
           <button style={S.navBtn} onClick={() => {
@@ -611,7 +613,7 @@ const save = (data) => {
               <button key={title} style={S.srcBtn} className="btn" onClick={fn}>
                 <span style={{fontSize:28,flexShrink:0}}>{icon}</span>
                 <div>
-                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:700,fontSize:14,color:"#F5F0E8"}}>{title}</div>
+                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:15,color:"#F5F0E8"}}>{title}</div>
                   <div style={{fontSize:12,color:"#8a8070",marginTop:2}}>{sub}</div>
                 </div>
               </button>
@@ -696,36 +698,36 @@ const save = (data) => {
 }
 
 const S = {
-  app:       {fontFamily:"'Inter',sans-serif",background:"#0D0D08",minHeight:"100vh",color:"#F5F0E8",display:"flex",flexDirection:"column",maxWidth:430,margin:"0 auto",position:"relative"},
+  app:       {fontFamily:"'DM Sans',sans-serif",background:"#0D0D08",minHeight:"100vh",color:"#F5F0E8",display:"flex",flexDirection:"column",maxWidth:430,margin:"0 auto",position:"relative"},
   header:    {display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 18px 12px",borderBottom:"1px solid rgba(212,175,55,.1)",background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:10},
-  logo:      {fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:19,color:"#F5F0E8"},
-  sub:       {fontSize:11,color:"#8a8070",marginTop:1},
+  logo:      {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,color:"#F5F0E8",letterSpacing:1},
+  sub:       {fontSize:11,color:"#8a8070",marginTop:1,fontFamily:"'DM Sans',sans-serif"},
   backBtn:   {background:"rgba(212,175,55,.08)",border:"1px solid rgba(212,175,55,.15)",color:"#D4AF37",fontSize:17,width:34,height:34,borderRadius:9,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"},
-  addBtn:    {background:"linear-gradient(135deg,#D4AF37,#F5D76E)",color:"#1a1a0a",border:"none",borderRadius:11,padding:"9px 16px",fontFamily:"'Inter',sans-serif",fontWeight:600,fontSize:14,cursor:"pointer",transition:"all .2s"},
-  ghostBtn:  {background:"transparent",border:"1px solid rgba(212,175,55,.2)",color:"#F5F0E8",borderRadius:11,padding:"10px 14px",fontFamily:"'Inter',sans-serif",fontSize:14,cursor:"pointer",transition:"all .2s",textAlign:"center"},
+  addBtn:    {background:"linear-gradient(135deg,#D4AF37,#F5D76E)",color:"#1a1a0a",border:"none",borderRadius:11,padding:"9px 16px",fontFamily:"'DM Sans',sans-serif",fontWeight:600,fontSize:14,cursor:"pointer",transition:"all .2s"},
+  ghostBtn:  {background:"transparent",border:"1px solid rgba(212,175,55,.2)",color:"#F5F0E8",borderRadius:11,padding:"10px 14px",fontFamily:"'DM Sans',sans-serif",fontSize:14,cursor:"pointer",transition:"all .2s",textAlign:"center"},
   content:   {flex:1,padding:"14px 18px 100px",overflowY:"auto"},
   statsRow:  {display:"flex",gap:8,marginBottom:18},
   stat:      {flex:1,background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.1)",borderRadius:13,padding:"13px 10px",textAlign:"center"},
-  statL:     {fontSize:10,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,marginBottom:3},
-  statV:     {fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:17,color:"#F5F0E8"},
-  secLabel:  {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.6,marginBottom:10},
+  statL:     {fontSize:10,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,marginBottom:3,fontFamily:"'DM Sans',sans-serif"},
+  statV:     {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:19,color:"#F5F0E8"},
+  secLabel:  {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.6,marginBottom:10,fontFamily:"'DM Sans',sans-serif"},
   chip:      {background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.15)",borderRadius:12,padding:"10px 14px",display:"flex",flexDirection:"column",alignItems:"flex-start",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minWidth:100,transition:"all .2s"},
   card:      {background:"rgba(212,175,55,.03)",border:"1px solid rgba(212,175,55,.08)",borderRadius:13,padding:"15px",marginBottom:10,cursor:"pointer",transition:"all .2s"},
   badge:     {fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:20,display:"inline-flex",alignItems:"center"},
   empty:     {textAlign:"center",padding:"50px 20px",display:"flex",flexDirection:"column",alignItems:"center"},
-  pageTitle: {fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:20,marginBottom:16,color:"#F5F0E8"},
+  pageTitle: {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:24,marginBottom:16,color:"#F5F0E8"},
   fg:        {marginBottom:13},
-  lbl:       {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,display:"block",marginBottom:5},
-  inp:       {width:"100%",background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.12)",borderRadius:9,padding:"11px 13px",color:"#F5F0E8",fontFamily:"'Inter',sans-serif",fontSize:14,colorScheme:"dark"},
+  lbl:       {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,display:"block",marginBottom:5,fontFamily:"'DM Sans',sans-serif"},
+  inp:       {width:"100%",background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.12)",borderRadius:9,padding:"11px 13px",color:"#F5F0E8",fontFamily:"'DM Sans',sans-serif",fontSize:14,colorScheme:"dark"},
   tabs:      {display:"flex",borderBottom:"1px solid rgba(212,175,55,.1)",marginBottom:16,gap:2},
-  tabBtn:    {flex:1,background:"transparent",border:"none",padding:"10px 4px",fontFamily:"'Inter',sans-serif",fontSize:13,cursor:"pointer",transition:"all .2s",fontWeight:500},
+  tabBtn:    {flex:1,background:"transparent",border:"none",padding:"10px 4px",fontFamily:"'DM Sans',sans-serif",fontSize:13,cursor:"pointer",transition:"all .2s",fontWeight:500},
   block:     {marginBottom:16},
-  blockTitle:{fontFamily:"'Playfair Display',serif",fontWeight:700,fontSize:14,marginBottom:12,color:"#F5F0E8"},
+  blockTitle:{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:15,marginBottom:12,color:"#F5F0E8"},
   nav:       {position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",borderTop:"1px solid rgba(212,175,55,.1)",display:"flex",padding:"8px 0 20px",zIndex:10},
-  navBtn:    {flex:1,background:"transparent",border:"none",color:"#8a8070",fontSize:18,fontFamily:"'Inter',sans-serif",cursor:"pointer",padding:"4px 0",lineHeight:1.5},
+  navBtn:    {flex:1,background:"transparent",border:"none",color:"#8a8070",fontSize:18,fontFamily:"'DM Sans',sans-serif",cursor:"pointer",padding:"4px 0",lineHeight:1.5},
   toast:     {position:"fixed",bottom:86,left:"50%",transform:"translateX(-50%)",padding:"11px 22px",borderRadius:28,color:"white",fontWeight:500,fontSize:13,zIndex:999,boxShadow:"0 8px 24px rgba(0,0,0,.5)",whiteSpace:"nowrap"},
   overlay:   {position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"},
   modal:     {background:"#141408",border:"1px solid rgba(212,175,55,.15)",borderRadius:"18px 18px 0 0",padding:"22px 18px 36px",width:"100%",maxWidth:430},
-  modalTitle:{fontFamily:"'Playfair Display',serif",fontWeight:800,fontSize:19,marginBottom:8,color:"#F5F0E8"},
+  modalTitle:{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,marginBottom:8,color:"#F5F0E8"},
   srcBtn:    {display:"flex",alignItems:"center",gap:14,width:"100%",padding:"15px",borderRadius:13,marginBottom:9,textAlign:"left",cursor:"pointer",background:"rgba(212,175,55,.04)",border:"1px solid rgba(212,175,55,.1)",transition:"all .2s"},
 };
