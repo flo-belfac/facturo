@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Home, BarChart2, Bell, ArrowLeft, X, Paperclip, Camera, Image, Pen, CheckCircle, Trash2, Plus, Copy, Check } from "lucide-react";
+import { Home, BarChart2, Bell, ArrowLeft, X, Paperclip, Camera, Image, Pen, CheckCircle, Trash2, Plus, Copy, Check, Search } from "lucide-react";
 
 const STORAGE_KEY = "payday-factures-v1";
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://jihdihqgyvtzboqwuzmr.supabase.co";
@@ -46,6 +46,8 @@ export default function App({ user, onLogout }) {
   const [rappelModal, setRappelModal] = useState(false);
   const [toast, setToast] = useState(null);
   const [copied, setCopied] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filterStatut, setFilterStatut] = useState("tous");
   const fileRef = useRef();
   const cameraRef = useRef();
   const annexeFileRef = useRef();
@@ -214,7 +216,9 @@ export default function App({ user, onLogout }) {
     total: factures.filter(f => f.fournisseur === name && f.statut !== "payee").reduce((s, f) => s + f.montant, 0),
   }));
 
-  const listeAffichee = dossierFilter ? factures.filter(f => f.fournisseur === dossierFilter) : factures;
+  const listeAffichee = (dossierFilter ? factures.filter(f => f.fournisseur === dossierFilter) : factures)
+    .filter(f => filterStatut === "tous" || f.statut === filterStatut)
+    .filter(f => !search || f.fournisseur.toLowerCase().includes(search.toLowerCase()) || (f.description||"").toLowerCase().includes(search.toLowerCase()) || String(f.montant).includes(search));
   const totalImpaye = factures.filter(f => f.statut !== "payee").reduce((s, f) => s + f.montant, 0);
   const urgentes = factures.filter(f => { const d = daysUntil(f.date); return f.statut !== "payee" && d !== null && d <= 7; });
   const currentFacture = selected ? (factures.find(x => x.id === selected.id) || selected) : null;
@@ -298,6 +302,38 @@ export default function App({ user, onLogout }) {
                 </div>
               </div>
             )}
+
+            {/* SEARCH */}
+            <div style={{position:"relative",marginBottom:12}}>
+              <Search size={15} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"#4a7a5a"}}/>
+              <input
+                style={{...S.inp,paddingLeft:36,fontSize:13}}
+                placeholder="Rechercher une facture..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+              {search && <button onClick={() => setSearch("")} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",cursor:"pointer",color:"#4a7a5a"}}><X size={14}/></button>}
+            </div>
+
+            {/* FILTERS */}
+            <div style={{display:"flex",gap:6,marginBottom:14,overflowX:"auto",paddingBottom:4}}>
+              {[["tous","Toutes"],["impayee","Impayées"],["plan paiement","En plan"],["payee","Payées"]].map(([val,lbl]) => (
+                <button key={val} onClick={() => setFilterStatut(val)} style={{
+                  background:filterStatut===val?"linear-gradient(135deg,#00FF88,#00FFCC)":"rgba(0,255,136,0.05)",
+                  border:"1px solid rgba(0,255,136,0.15)",
+                  borderRadius:20,
+                  padding:"6px 14px",
+                  fontSize:12,
+                  color:filterStatut===val?"#050D08":"#4a7a5a",
+                  cursor:"pointer",
+                  whiteSpace:"nowrap",
+                  fontFamily:"'DM Sans',sans-serif",
+                  fontWeight:filterStatut===val?600:400,
+                  transition:"all 0.2s",
+                  flexShrink:0,
+                }}>{lbl}</button>
+              ))}
+            </div>
 
             <div style={S.secLabel}>Toutes les factures</div>
 
