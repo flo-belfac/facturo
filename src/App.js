@@ -246,7 +246,7 @@ export default function App({ user, onLogout }) {
             }}>←</button>
           )}
           <div style={{animation:"float 4s ease-in-out infinite"}}>
-            <div style={S.logo}>💸 PayDay</div>
+            <div style={{...S.logo,background:"linear-gradient(90deg,#00FF88,#00FFCC,#00FF88)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:"shimmer 2s linear infinite"}}>PayDay</div>
             {view === "list" && !dossierFilter && <div style={S.sub}>Vos factures, sous contrôle</div>}
             {dossierFilter && <div style={S.sub}>📁 {dossierFilter}</div>}
           </div>
@@ -312,11 +312,11 @@ export default function App({ user, onLogout }) {
                 const days = daysUntil(f.date);
                 const urgent = days !== null && days <= 7 && f.statut !== "payee";
                 return (
-                  <div key={f.id} style={{...S.card,borderLeft:`3px solid ${urgent?"#FC8181":statusColors[f.statut]?.dot||"#D4AF37"}`,opacity:f.statut==="payee"?.6:1}}
+                  <div key={f.id} style={{...S.card,borderLeft:`3px solid ${urgent?"#FC8181":statusColors[f.statut]?.dot||"#00FF88"}`,opacity:f.statut==="payee"?.6:1}}
                     className="hov" onClick={() => { setSelected(f); setTab("infos"); setView("detail"); }}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:5}}>
                       <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:17,textDecoration:f.statut==="payee"?"line-through":"none"}}>{f.fournisseur}</div>
-                      <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:18,color:"#D4AF37"}}>{fmt(f.montant)}</div>
+                      <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:18,color:"#00FF88"}}>{fmt(f.montant)}</div>
                     </div>
                     {f.description && <div style={{fontSize:13,color:"#8a8070",marginBottom:8}}>{f.description}</div>}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
@@ -326,7 +326,7 @@ export default function App({ user, onLogout }) {
                       </span>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}>
                         {f.annexes?.length > 0 && <span style={{fontSize:11,color:"#8a8070"}}>📎 {f.annexes.length}</span>}
-                        {f.rappel && <span style={{fontSize:13,color:"#D4AF37"}}>🔔</span>}
+                        {f.rappel && <span style={{fontSize:13,color:"#00FF88"}}>🔔</span>}
                         {f.date && <span style={{fontSize:12,color:urgent?"#FC8181":"#8a8070"}}>{urgent?"⚠ ":""}{fmtDate(f.date)}</span>}
                       </div>
                     </div>
@@ -343,14 +343,14 @@ export default function App({ user, onLogout }) {
             <div style={S.pageTitle}>Nouvelle facture</div>
 
             {previewImg && (
-              <div style={{background:"rgba(212,175,55,.04)",border:"1px solid rgba(212,175,55,.12)",borderRadius:14,padding:12,marginBottom:16}}>
+              <div style={{background:"rgba(0,255,136,.04)",border:"1px solid rgba(0,255,136,.12)",borderRadius:14,padding:12,marginBottom:16}}>
                 <img src={previewImg} alt="" style={{width:"100%",borderRadius:10,maxHeight:200,objectFit:"contain"}} />
                 {!scanResult && !scanning && (
                   <button style={{...S.addBtn,width:"100%",marginTop:12}} className="btn" onClick={scanFacture}>
                     Analyser la facture
                   </button>
                 )}
-                {scanning && <div style={{textAlign:"center",color:"#D4AF37",padding:"12px 0",animation:"pulse 1.2s infinite"}}>Analyse en cours...</div>}
+                {scanning && <div style={{textAlign:"center",color:"#00FF88",padding:"12px 0",animation:"pulse 1.2s infinite"}}>Analyse en cours...</div>}
                 {scanResult && <div style={{textAlign:"center",color:"#68D391",padding:"8px 0",fontSize:13}}>Informations extraites ✓</div>}
               </div>
             )}
@@ -406,7 +406,7 @@ export default function App({ user, onLogout }) {
                   </div>
                   <span style={{...S.badge,...(statusColors[f.statut]||statusColors.impayee),fontSize:12,flexShrink:0,marginLeft:8}}>{f.statut}</span>
                 </div>
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#D4AF37",margin:"8px 0 6px"}}>{fmt(f.montant)}</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#00FF88",margin:"8px 0 6px"}}>{fmt(f.montant)}</div>
                 {f.date && (
                   <div style={{color:urgent?"#FC8181":"#8a8070",fontSize:13}}>
                     Echeance : {fmtDate(f.date)} {days!==null?`(${days===0?"Aujourd'hui":days<0?`En retard de ${Math.abs(days)}j`:`J-${days}`})`:""}
@@ -416,7 +416,7 @@ export default function App({ user, onLogout }) {
 
               <div style={S.tabs}>
                 {[["infos","Infos"],["virement","Virement"],["annexes","Annexes"]].map(([id,lbl]) => (
-                  <button key={id} style={{...S.tabBtn,borderBottom:tab===id?"2px solid #D4AF37":"2px solid transparent",color:tab===id?"#D4AF37":"#8a8070"}}
+                  <button key={id} style={{...S.tabBtn,borderBottom:tab===id?"2px solid #00FF88":"2px solid transparent",color:tab===id?"#00FF88":"#8a8070"}}
                     onClick={() => setTab(id)}>{lbl}</button>
                 ))}
               </div>
@@ -426,9 +426,9 @@ export default function App({ user, onLogout }) {
                   <div style={S.block}>
                     <div style={S.blockTitle}>Rappel de paiement</div>
                     {f.rappel ? (
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(212,175,55,.08)",border:"1px solid rgba(212,175,55,.2)",borderRadius:11,padding:"12px 14px"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.2)",borderRadius:11,padding:"12px 14px"}}>
                         <div>
-                          <div style={{color:"#D4AF37",fontSize:14,fontWeight:500}}>Rappel le {fmtDate(f.rappel)}</div>
+                          <div style={{color:"#00FF88",fontSize:14,fontWeight:500}}>Rappel le {fmtDate(f.rappel)}</div>
                           {f.rappelJours > 0 && <div style={{color:"#8a8070",fontSize:12,marginTop:2}}>{f.rappelJours} jours avant</div>}
                         </div>
                         <button style={{background:"transparent",border:"none",color:"#FC8181",fontSize:18,cursor:"pointer"}}
@@ -444,11 +444,11 @@ export default function App({ user, onLogout }) {
                       <div style={S.blockTitle}>Plan de paiement</div>
                       {f.planPaiement ? (
                         f.planPaiement.map((p,i) => (
-                          <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:"1px solid rgba(212,175,55,.08)",fontSize:14}}>
-                            <div><span>Versement {p.numero}</span><span style={{color:"#D4AF37",fontWeight:700,marginLeft:10}}>{fmt(p.montant)}</span></div>
+                          <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:"1px solid rgba(0,255,136,.08)",fontSize:14}}>
+                            <div><span>Versement {p.numero}</span><span style={{color:"#00FF88",fontWeight:700,marginLeft:10}}>{fmt(p.montant)}</span></div>
                             <div style={{display:"flex",alignItems:"center",gap:10}}>
                               <span style={{color:"#8a8070",fontSize:12}}>{fmtDate(p.date)}</span>
-                              <input type="checkbox" checked={p.paye} style={{width:18,height:18,accentColor:"#D4AF37",cursor:"pointer"}}
+                              <input type="checkbox" checked={p.paye} style={{width:18,height:18,accentColor:"#00FF88",cursor:"pointer"}}
                                 onChange={() => {
                                   const up = f.planPaiement.map((x,j)=>j===i?{...x,paye:!x.paye}:x);
                                   updateFacture(f.id,{planPaiement:up,statut:up.every(x=>x.paye)?"payee":"plan paiement"});
@@ -480,7 +480,7 @@ export default function App({ user, onLogout }) {
               )}
 
               {tab === "virement" && (
-                <div style={{...S.block,background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.15)",borderRadius:14,padding:"16px 16px 10px"}}>
+                <div style={{...S.block,background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.15)",borderRadius:14,padding:"16px 16px 10px"}}>
                   <div style={{...S.blockTitle,marginBottom:4}}>Infos pour le virement</div>
                   <div style={{fontSize:12,color:"#8a8070",marginBottom:16}}>Appuyez sur Copier puis collez dans votre app bancaire</div>
 
@@ -492,9 +492,9 @@ export default function App({ user, onLogout }) {
                   ].filter(x=>x.value).map(({label,value,k}) => (
                     <div key={k} style={{marginBottom:12}}>
                       <div style={{fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,marginBottom:5}}>{label}</div>
-                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(255,255,255,.04)",border:"1px solid rgba(212,175,55,.1)",borderRadius:10,padding:"11px 13px"}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(255,255,255,.04)",border:"1px solid rgba(0,255,136,.1)",borderRadius:10,padding:"11px 13px"}}>
                         <span style={{fontSize:14,color:"#F5F0E8",fontWeight:500,wordBreak:"break-all",flex:1}}>{value}</span>
-                        <button className="btn" style={{background:copied===k?"rgba(104,211,145,.2)":"rgba(212,175,55,.15)",border:"none",color:copied===k?"#68D391":"#D4AF37",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",marginLeft:10,flexShrink:0,transition:"all .2s"}}
+                        <button className="btn" style={{background:copied===k?"rgba(104,211,145,.2)":"rgba(0,255,136,.15)",border:"none",color:copied===k?"#68D391":"#00FF88",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",marginLeft:10,flexShrink:0,transition:"all .2s"}}
                           onClick={() => copyToClipboard(k==="amt"?String(f.montant):value, k)}>
                           {copied===k?"Copie":"Copier"}
                         </button>
@@ -566,9 +566,9 @@ export default function App({ user, onLogout }) {
                         )}
                         {a.type==="plan" && (
                           <div>
-                            <div style={{fontSize:11,color:"#D4AF37",marginBottom:8}}>Plan paiement - {fmtDate(a.addedAt)}</div>
+                            <div style={{fontSize:11,color:"#00FF88",marginBottom:8}}>Plan paiement - {fmtDate(a.addedAt)}</div>
                             {a.data.map((p,j) => (
-                              <div key={j} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"5px 0",borderBottom:"1px solid rgba(212,175,55,.08)"}}>
+                              <div key={j} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"5px 0",borderBottom:"1px solid rgba(0,255,136,.08)"}}>
                                 <span>Versement {p.numero} - {fmt(p.montant)}</span>
                                 <span style={{color:"#8a8070"}}>{fmtDate(p.date)}</span>
                               </div>
@@ -588,7 +588,7 @@ export default function App({ user, onLogout }) {
       {/* NAV */}
       {view === "list" && !dossierFilter && (
         <div style={S.nav}>
-          <button style={{...S.navBtn,color:"#D4AF37"}}>🏠<br/><span style={{fontSize:10}}>Accueil</span></button>
+          <button style={{...S.navBtn,color:"#00FF88"}}>🏠<br/><span style={{fontSize:10}}>Accueil</span></button>
           <button style={S.navBtn} onClick={() => showToast(`${factures.filter(f=>f.statut!=="payee").length} factures — ${fmt(totalImpaye)} a payer`)}>
             📊<br/><span style={{fontSize:10}}>Resume</span>
           </button>
@@ -698,36 +698,36 @@ export default function App({ user, onLogout }) {
 }
 
 const S = {
-  app:       {fontFamily:"'DM Sans',sans-serif",background:"#0D0D08",minHeight:"100vh",color:"#F5F0E8",display:"flex",flexDirection:"column",maxWidth:430,margin:"0 auto",position:"relative"},
-  header:    {display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 18px 12px",borderBottom:"1px solid rgba(212,175,55,.1)",background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:10},
+  app:       {fontFamily:"'DM Sans',sans-serif",background:"#080D0A",minHeight:"100vh",color:"#F5F0E8",display:"flex",flexDirection:"column",maxWidth:430,margin:"0 auto",position:"relative"},
+  header:    {display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 18px 12px",borderBottom:"1px solid rgba(0,255,136,.1)",background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",position:"sticky",top:0,zIndex:10},
   logo:      {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,color:"#F5F0E8",letterSpacing:1},
   sub:       {fontSize:11,color:"#8a8070",marginTop:1,fontFamily:"'DM Sans',sans-serif"},
-  backBtn:   {background:"rgba(212,175,55,.08)",border:"1px solid rgba(212,175,55,.15)",color:"#D4AF37",fontSize:17,width:34,height:34,borderRadius:9,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"},
-  addBtn:    {background:"linear-gradient(135deg,#D4AF37,#F5D76E)",color:"#1a1a0a",border:"none",borderRadius:11,padding:"9px 16px",fontFamily:"'DM Sans',sans-serif",fontWeight:600,fontSize:14,cursor:"pointer",transition:"all .2s"},
-  ghostBtn:  {background:"transparent",border:"1px solid rgba(212,175,55,.2)",color:"#F5F0E8",borderRadius:11,padding:"10px 14px",fontFamily:"'DM Sans',sans-serif",fontSize:14,cursor:"pointer",transition:"all .2s",textAlign:"center"},
+  backBtn:   {background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.15)",color:"#00FF88",fontSize:17,width:34,height:34,borderRadius:9,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"},
+  addBtn:    {background:"linear-gradient(135deg,#00FF88,#00FF88)",color:"#050D08",border:"none",borderRadius:11,padding:"9px 16px",fontFamily:"'DM Sans',sans-serif",fontWeight:600,fontSize:14,cursor:"pointer",transition:"all .2s"},
+  ghostBtn:  {background:"transparent",border:"1px solid rgba(0,255,136,.2)",color:"#F5F0E8",borderRadius:11,padding:"10px 14px",fontFamily:"'DM Sans',sans-serif",fontSize:14,cursor:"pointer",transition:"all .2s",textAlign:"center"},
   content:   {flex:1,padding:"14px 18px 100px",overflowY:"auto"},
   statsRow:  {display:"flex",gap:8,marginBottom:18},
-  stat:      {flex:1,background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.1)",borderRadius:13,padding:"13px 10px",textAlign:"center"},
+  stat:      {flex:1,background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.1)",borderRadius:13,padding:"13px 10px",textAlign:"center"},
   statL:     {fontSize:10,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,marginBottom:3,fontFamily:"'DM Sans',sans-serif"},
   statV:     {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:19,color:"#F5F0E8"},
   secLabel:  {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.6,marginBottom:10,fontFamily:"'DM Sans',sans-serif"},
-  chip:      {background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.15)",borderRadius:12,padding:"10px 14px",display:"flex",flexDirection:"column",alignItems:"flex-start",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minWidth:100,transition:"all .2s"},
-  card:      {background:"rgba(212,175,55,.03)",border:"1px solid rgba(212,175,55,.08)",borderRadius:13,padding:"15px",marginBottom:10,cursor:"pointer",transition:"all .2s"},
+  chip:      {background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.15)",borderRadius:12,padding:"10px 14px",display:"flex",flexDirection:"column",alignItems:"flex-start",cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,minWidth:100,transition:"all .2s"},
+  card:      {background:"rgba(0,255,136,.03)",border:"1px solid rgba(0,255,136,.08)",borderRadius:13,padding:"15px",marginBottom:10,cursor:"pointer",transition:"all .2s"},
   badge:     {fontSize:11,fontWeight:600,padding:"3px 10px",borderRadius:20,display:"inline-flex",alignItems:"center"},
   empty:     {textAlign:"center",padding:"50px 20px",display:"flex",flexDirection:"column",alignItems:"center"},
   pageTitle: {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:24,marginBottom:16,color:"#F5F0E8"},
   fg:        {marginBottom:13},
   lbl:       {fontSize:11,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,display:"block",marginBottom:5,fontFamily:"'DM Sans',sans-serif"},
-  inp:       {width:"100%",background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.12)",borderRadius:9,padding:"11px 13px",color:"#F5F0E8",fontFamily:"'DM Sans',sans-serif",fontSize:14,colorScheme:"dark"},
-  tabs:      {display:"flex",borderBottom:"1px solid rgba(212,175,55,.1)",marginBottom:16,gap:2},
+  inp:       {width:"100%",background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.12)",borderRadius:9,padding:"11px 13px",color:"#F5F0E8",fontFamily:"'DM Sans',sans-serif",fontSize:14,colorScheme:"dark"},
+  tabs:      {display:"flex",borderBottom:"1px solid rgba(0,255,136,.1)",marginBottom:16,gap:2},
   tabBtn:    {flex:1,background:"transparent",border:"none",padding:"10px 4px",fontFamily:"'DM Sans',sans-serif",fontSize:13,cursor:"pointer",transition:"all .2s",fontWeight:500},
   block:     {marginBottom:16},
   blockTitle:{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:15,marginBottom:12,color:"#F5F0E8"},
-  nav:       {position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",borderTop:"1px solid rgba(212,175,55,.1)",display:"flex",padding:"8px 0 20px",zIndex:10},
+  nav:       {position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,background:"rgba(13,13,8,.97)",backdropFilter:"blur(12px)",borderTop:"1px solid rgba(0,255,136,.1)",display:"flex",padding:"8px 0 20px",zIndex:10},
   navBtn:    {flex:1,background:"transparent",border:"none",color:"#8a8070",fontSize:18,fontFamily:"'DM Sans',sans-serif",cursor:"pointer",padding:"4px 0",lineHeight:1.5},
   toast:     {position:"fixed",bottom:86,left:"50%",transform:"translateX(-50%)",padding:"11px 22px",borderRadius:28,color:"white",fontWeight:500,fontSize:13,zIndex:999,boxShadow:"0 8px 24px rgba(0,0,0,.5)",whiteSpace:"nowrap"},
   overlay:   {position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"},
-  modal:     {background:"#141408",border:"1px solid rgba(212,175,55,.15)",borderRadius:"18px 18px 0 0",padding:"22px 18px 36px",width:"100%",maxWidth:430},
+  modal:     {background:"#141408",border:"1px solid rgba(0,255,136,.15)",borderRadius:"18px 18px 0 0",padding:"22px 18px 36px",width:"100%",maxWidth:430},
   modalTitle:{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,marginBottom:8,color:"#F5F0E8"},
-  srcBtn:    {display:"flex",alignItems:"center",gap:14,width:"100%",padding:"15px",borderRadius:13,marginBottom:9,textAlign:"left",cursor:"pointer",background:"rgba(212,175,55,.04)",border:"1px solid rgba(212,175,55,.1)",transition:"all .2s"},
+  srcBtn:    {display:"flex",alignItems:"center",gap:14,width:"100%",padding:"15px",borderRadius:13,marginBottom:9,textAlign:"left",cursor:"pointer",background:"rgba(0,255,136,.04)",border:"1px solid rgba(0,255,136,.1)",transition:"all .2s"},
 };
