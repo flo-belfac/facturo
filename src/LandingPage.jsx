@@ -2,109 +2,144 @@ export default function LandingPage({ onStart }) {
   return (
     <div style={S.page}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
         @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-        .feat:hover{transform:translateY(-4px);border-color:rgba(212,175,55,.4)!important;background:rgba(212,175,55,.06)!important}
-        .cta:hover{transform:translateY(-2px);box-shadow:0 20px 60px rgba(212,175,55,.3)!important}
-        .fade1{animation:fadeUp .7s ease both}
-        .fade2{animation:fadeUp .7s .15s ease both}
-        .fade3{animation:fadeUp .7s .3s ease both}
-        .fade4{animation:fadeUp .7s .45s ease both}
-        .fade5{animation:fadeUp .7s .6s ease both}
-        .nav-btn:hover{background:rgba(212,175,55,.1)!important;color:#D4AF37!important}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes pulse{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.7;transform:scale(1.1)}}
+        @keyframes scanLine{0%{top:0}100%{top:100%}}
+        @keyframes typewriter{from{width:0}to{width:100%}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+        @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,255,136,0.2),0 0 40px rgba(0,255,136,0.1)}50%{box-shadow:0 0 40px rgba(0,255,136,0.4),0 0 80px rgba(0,255,136,0.2)}}
+        @keyframes rotateGlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+        .cta-btn:hover{transform:translateY(-3px)!important;box-shadow:0 20px 60px rgba(0,255,136,0.4)!important}
+        .feat:hover{border-color:rgba(0,255,136,0.4)!important;background:rgba(0,255,136,0.05)!important;transform:translateY(-4px)}
+        .feat{transition:all 0.3s}
       `}</style>
 
-      <div style={S.glow1} />
-      <div style={S.glow2} />
+      {/* BG Effects */}
+      <div style={{position:"fixed",inset:0,overflow:"hidden",zIndex:0,pointerEvents:"none"}}>
+        <div style={{position:"absolute",width:800,height:800,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,255,136,0.06) 0%,transparent 70%)",top:"20%",left:"50%",transform:"translateX(-50%)",animation:"pulse 8s ease-in-out infinite"}}/>
+        <div style={{position:"absolute",width:400,height:400,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,255,200,0.04) 0%,transparent 70%)",bottom:"10%",left:"5%",animation:"pulse 10s ease-in-out infinite 3s"}}/>
+        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,255,136,0.05) 0%,transparent 70%)",top:"10%",right:"5%",animation:"pulse 12s ease-in-out infinite 1s"}}/>
+        <svg width="100%" height="100%" style={{position:"absolute",inset:0,opacity:0.025}}>
+          <defs>
+            <pattern id="g" width="50" height="50" patternUnits="userSpaceOnUse">
+              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#00FF88" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g)"/>
+        </svg>
+      </div>
 
-      {/* Nav */}
-      <nav style={S.nav} className="fade1">
-        <div style={S.navLogo}>💸 PayDay</div>
-        <button onClick={onStart} style={S.navBtn} className="nav-btn">Connexion</button>
+      {/* NAV */}
+      <nav style={S.nav}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <div style={{
+            fontFamily:"'Cormorant Garamond',serif",
+            fontWeight:700,
+            fontSize:24,
+            letterSpacing:2,
+            background:"linear-gradient(90deg,#00FF88,#00FFCC,#00FF88)",
+            backgroundSize:"200% auto",
+            WebkitBackgroundClip:"text",
+            WebkitTextFillColor:"transparent",
+            backgroundClip:"text",
+            animation:"shimmer 2s linear infinite",
+          }}>PayDay</div>
+        </div>
+        <button onClick={onStart} style={S.navBtn}>Connexion</button>
       </nav>
 
-      {/* Hero */}
+      {/* HERO */}
       <section style={S.hero}>
-        <div className="fade1" style={S.badge}>✦ Gestion de factures simplifiée</div>
 
-        <h1 className="fade2" style={S.title}>
-          Vos factures,<br />
-          <span style={S.titleAccent}>sous contrôle</span>
+        {/* Animated logo */}
+        <div style={{position:"relative",width:100,height:100,margin:"0 auto 36px",animation:"float 4s ease-in-out infinite",zIndex:1}}>
+          <div style={{position:"absolute",inset:-10,borderRadius:"50%",border:"1px solid rgba(0,255,136,0.2)",animation:"rotateGlow 8s linear infinite"}}/>
+          <div style={{position:"absolute",inset:-20,borderRadius:"50%",border:"1px solid rgba(0,255,136,0.08)",animation:"rotateGlow 12s linear infinite reverse"}}/>
+          <svg viewBox="0 0 100 100" width="100" height="100" style={{filter:"drop-shadow(0 0 12px rgba(0,255,136,0.5))"}}>
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#00FF88"/>
+                <stop offset="100%" stopColor="#00FFCC"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="#080D0A" stroke="url(#g1)" strokeWidth="1.5"/>
+            <rect x="27" y="20" width="46" height="56" rx="4" fill="#0a1a10" stroke="url(#g1)" strokeWidth="1.2"/>
+            <line x1="35" y1="34" x2="65" y2="34" stroke="#00FF88" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="35" y1="44" x2="62" y2="44" stroke="#00FF88" strokeWidth="1" strokeLinecap="round" opacity="0.5"/>
+            <line x1="35" y1="52" x2="58" y2="52" stroke="#00FF88" strokeWidth="1" strokeLinecap="round" opacity="0.5"/>
+            <line x1="35" y1="60" x2="55" y2="60" stroke="#00FF88" strokeWidth="1" strokeLinecap="round" opacity="0.5"/>
+            <path d="M27 64 L30 68 L33 64 L36 68 L39 64 L42 68 L45 64 L48 68 L51 64 L54 68 L57 64 L60 68 L63 64 L66 68 L69 64 L73 64" fill="none" stroke="url(#g1)" strokeWidth="1.2"/>
+          </svg>
+        </div>
+
+        <div style={{animation:"fadeUp 0.8s ease both",zIndex:1}}>
+          <div style={{display:"inline-block",background:"rgba(0,255,136,0.08)",border:"1px solid rgba(0,255,136,0.2)",borderRadius:20,padding:"6px 18px",fontSize:12,color:"#00FF88",letterSpacing:3,textTransform:"uppercase",marginBottom:24,fontFamily:"'DM Sans',sans-serif"}}>
+            ✦ Gestion de factures intelligente
+          </div>
+        </div>
+
+        <h1 style={{...S.title,animation:"fadeUp 0.8s 0.1s ease both"}}>
+          Vos factures,<br/>
+          <span style={{
+            background:"linear-gradient(135deg,#00FF88,#00FFCC,#00FF88)",
+            backgroundSize:"200% auto",
+            WebkitBackgroundClip:"text",
+            WebkitTextFillColor:"transparent",
+            backgroundClip:"text",
+            animation:"shimmer 2s linear infinite",
+          }}>sous contrôle.</span>
         </h1>
 
-        <p className="fade3" style={S.subtitle}>
-          Prenez en photo vos factures papier, PayDay extrait toutes les informations automatiquement.<br />
-          Rappels, plans de paiement, virements — tout en un seul endroit.
+        <p style={{...S.subtitle,animation:"fadeUp 0.8s 0.2s ease both"}}>
+          Photographiez vos factures papier — PayDay extrait tout automatiquement.<br/>
+          Rappels, plans de paiement, virements simplifiés.
         </p>
 
-        <div className="fade4" style={{display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap"}}>
-          <button onClick={onStart} style={S.ctaBtn} className="cta">
+        <div style={{display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap",animation:"fadeUp 0.8s 0.3s ease both"}}>
+          <button onClick={onStart} className="cta-btn" style={S.ctaBtn}>
             Commencer gratuitement →
           </button>
           <button onClick={onStart} style={S.ctaGhost}>
-            En savoir plus
+            Voir comment ça marche
           </button>
         </div>
 
-        {/* Mockup */}
-        <div className="fade5" style={S.mockupWrap}>
-          <div style={S.mockup}>
-            <div style={S.mockupHeader}>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:15,color:"#F5F0E8"}}>💸 PayDay</div>
-              <div style={{background:"linear-gradient(135deg,#D4AF37,#F5D76E)",color:"#1a1a0a",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:600}}>+ Ajouter</div>
+        {/* Stats */}
+        <div style={{display:"flex",gap:32,justifyContent:"center",marginTop:48,animation:"fadeUp 0.8s 0.4s ease both",flexWrap:"wrap"}}>
+          {[["Gratuit","3 mois"],["< 10s","par facture"],["100%","sécurisé"]].map(([v,l]) => (
+            <div key={l} style={{textAlign:"center"}}>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:28,color:"#00FF88"}}>{v}</div>
+              <div style={{fontSize:12,color:"#4a7a5a",fontFamily:"'DM Sans',sans-serif",marginTop:2}}>{l}</div>
             </div>
-            <div style={S.mockupStats}>
-              {[["À payer","1 240 €"],["Factures","8"],["Urgentes","2"]].map(([l,v])=>(
-                <div key={l} style={S.mockupStat}>
-                  <div style={{fontSize:10,color:"#8a8070",textTransform:"uppercase",letterSpacing:.5,marginBottom:3}}>{l}</div>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:16,color:"#F5F0E8"}}>{v}</div>
-                </div>
-              ))}
-            </div>
-            {[
-              {name:"Luminus",amount:"€ 124,50",status:"impayée",color:"#FC8181",days:"J-3"},
-              {name:"Proximus",amount:"€ 49,99",status:"plan paiement",color:"#63B3ED",days:"J-12"},
-              {name:"Loyer",amount:"€ 850,00",status:"payée",color:"#68D391",days:"payée"},
-            ].map(f=>(
-              <div key={f.name} style={S.mockupCard}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div>
-                    <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:13,color:f.status==="payée"?"#6B7280":"#F5F0E8",textDecoration:f.status==="payée"?"line-through":"none"}}>{f.name}</div>
-                    <div style={{fontSize:11,color:"#8a8070",marginTop:2}}>{f.days}</div>
-                  </div>
-                  <div>
-                    <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:14,color:"#D4AF37",textAlign:"right"}}>{f.amount}</div>
-                    <div style={{fontSize:10,color:f.color,textAlign:"right",marginTop:2}}>{f.status}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Features */}
+      {/* FEATURES */}
       <section style={S.features}>
-        <div style={{textAlign:"center",marginBottom:12}}>
-          <div style={{...S.badge,display:"inline-block"}}>✦ Fonctionnalités</div>
+        <div style={{textAlign:"center",marginBottom:48}}>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#F0FFF8",marginBottom:12}}>Tout ce dont vous avez besoin</h2>
+          <p style={{color:"#4a7a5a",fontSize:15,fontFamily:"'DM Sans',sans-serif"}}>Une app simple, rapide, et efficace</p>
         </div>
-        <h2 style={S.featTitle}>Tout ce dont vous avez besoin</h2>
-        <div style={S.featGrid}>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:16,maxWidth:900,margin:"0 auto"}}>
           {[
-            {icon:"📷", title:"Scan automatique", desc:"Prenez en photo votre facture. PayDay détecte et extrait le montant, la date, l'IBAN et la communication en quelques secondes."},
-            {icon:"📁", title:"Dossiers fournisseurs", desc:"Vos factures sont organisées automatiquement par fournisseur. Luminus, Proximus, taxes — tout est rangé et accessible."},
-            {icon:"🔔", title:"Rappels intelligents", desc:"Définissez un rappel 3, 7 ou 15 jours avant l'échéance. Ne ratez plus jamais une date de paiement."},
-            {icon:"💳", title:"Virement simplifié", desc:"Copiez l'IBAN et la communication en un clic pour les coller directement dans votre application bancaire."},
-            {icon:"📋", title:"Plan de paiement", desc:"Divisez une facture importante en plusieurs versements. Suivez chaque paiement et cochez au fur et à mesure."},
-            {icon:"✅", title:"Suivi des paiements", desc:"Marquez vos factures comme payées en un tap. Gardez une vue claire de ce qui reste à régler."},
-          ].map(({icon,title,desc})=>(
-            <div key={title} style={S.featCard} className="feat">
-              <div style={S.featIcon}>{icon}</div>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:17,color:"#F5F0E8",marginBottom:8}}>{title}</div>
-              <div style={{fontSize:13,color:"#8a8070",lineHeight:1.7}}>{desc}</div>
+            {icon:"📸",title:"Scan automatique",desc:"Prenez une photo — PayDay lit la facture et remplit tout en quelques secondes."},
+            {icon:"📁",title:"Dossiers fournisseurs",desc:"Toutes vos factures organisées par fournisseur automatiquement."},
+            {icon:"🔔",title:"Rappels intelligents",desc:"Ne plus jamais oublier une échéance. Définissez vos rappels en 1 clic."},
+            {icon:"💳",title:"Virement simplifié",desc:"Copiez IBAN et communication en un tap. Collez dans votre app bancaire."},
+            {icon:"📅",title:"Plan de paiement",desc:"Étalez vos paiements en 2x, 3x, jusqu'à 12x avec suivi automatique."},
+            {icon:"✅",title:"Suivi des paiements",desc:"Marquez vos factures payées et gardez un historique clair et net."},
+          ].map(({icon,title,desc}) => (
+            <div key={title} className="feat" style={S.feat}>
+              <div style={{fontSize:32,marginBottom:14}}>{icon}</div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:18,color:"#F0FFF8",marginBottom:8}}>{title}</div>
+              <div style={{fontSize:14,color:"#4a7a5a",lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>{desc}</div>
             </div>
           ))}
         </div>
@@ -112,56 +147,49 @@ export default function LandingPage({ onStart }) {
 
       {/* CTA */}
       <section style={S.ctaSection}>
-        <div style={S.ctaBox}>
-          <div style={{fontSize:48,marginBottom:16,animation:"float 3s ease-in-out infinite"}}>🧾</div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:800,fontSize:32,color:"#F5F0E8",marginBottom:12,textAlign:"center"}}>
-            Prêt à reprendre le contrôle ?
+        <div style={{background:"rgba(0,255,136,0.04)",border:"1px solid rgba(0,255,136,0.15)",borderRadius:24,padding:"48px 32px",textAlign:"center",maxWidth:600,margin:"0 auto",position:"relative",overflow:"hidden",animation:"glow 4s ease-in-out infinite"}}>
+          <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 50% 0%,rgba(0,255,136,0.08),transparent 60%)"}}/>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#F0FFF8",marginBottom:12,position:"relative"}}>
+            Essayez PayDay gratuitement
           </h2>
-          <p style={{color:"#8a8070",fontSize:15,marginBottom:28,textAlign:"center",maxWidth:400,lineHeight:1.7}}>
-            Créez votre compte gratuitement et commencez à gérer vos factures en 2 minutes.
+          <p style={{color:"#4a7a5a",fontSize:15,marginBottom:28,fontFamily:"'DM Sans',sans-serif",position:"relative"}}>
+            Gratuit pendant 3 mois, puis 4,99€/mois.<br/>Annulation à tout moment.
           </p>
-          <button onClick={onStart} style={{...S.ctaBtn,padding:"16px 48px",fontSize:17}} className="cta">
+          <button onClick={onStart} className="cta-btn" style={{...S.ctaBtn,position:"relative"}}>
             Créer mon compte →
           </button>
-          <div style={{color:"#6B7280",fontSize:12,marginTop:16}}>Gratuit · Aucune carte bancaire requise</div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* FOOTER */}
       <footer style={S.footer}>
-        <div style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:18,color:"#D4AF37",marginBottom:6}}>💸 PayDay</div>
-        <div style={{color:"#6B7280",fontSize:12}}>Gestion de factures simplifiée · 2025</div>
+        <div style={{
+          fontFamily:"'Cormorant Garamond',serif",
+          fontWeight:700,
+          fontSize:18,
+          background:"linear-gradient(90deg,#00FF88,#00FFCC)",
+          WebkitBackgroundClip:"text",
+          WebkitTextFillColor:"transparent",
+          backgroundClip:"text",
+          marginBottom:8,
+        }}>PayDay</div>
+        <div style={{fontSize:12,color:"#2a4a38",fontFamily:"'DM Sans',sans-serif"}}>© 2026 PayDay — Vos factures, sous contrôle.</div>
       </footer>
     </div>
   );
 }
 
 const S = {
-  page:      {fontFamily:"'Inter',sans-serif",background:"#0D0D08",minHeight:"100vh",color:"#F5F0E8",position:"relative",overflow:"hidden"},
-  glow1:     {position:"fixed",top:"-20%",left:"-10%",width:600,height:600,background:"radial-gradient(circle,rgba(212,175,55,.12) 0%,transparent 70%)",pointerEvents:"none",zIndex:0},
-  glow2:     {position:"fixed",bottom:"-20%",right:"-10%",width:500,height:500,background:"radial-gradient(circle,rgba(212,175,55,.08) 0%,transparent 70%)",pointerEvents:"none",zIndex:0},
-  nav:       {display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 40px",borderBottom:"1px solid rgba(212,175,55,.12)",position:"relative",zIndex:10},
-  navLogo:   {fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,color:"#F5F0E8"},
-  navBtn:    {background:"transparent",border:"1px solid rgba(212,175,55,.3)",color:"#D4AF37",borderRadius:10,padding:"8px 18px",fontFamily:"'Inter',sans-serif",fontSize:14,cursor:"pointer",transition:"all .2s"},
-  hero:      {textAlign:"center",padding:"80px 20px 60px",position:"relative",zIndex:1},
-  badge:     {display:"inline-block",background:"rgba(212,175,55,.08)",border:"1px solid rgba(212,175,55,.25)",borderRadius:20,padding:"6px 16px",fontSize:12,color:"#D4AF37",marginBottom:24,letterSpacing:1},
-  title:     {fontFamily:"'Cormorant Garamond',serif",fontWeight:800,fontSize:"clamp(36px,6vw,72px)",color:"#F5F0E8",lineHeight:1.1,marginBottom:20},
-  titleAccent:{background:"linear-gradient(135deg,#D4AF37,#F5D76E,#D4AF37)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",animation:"shimmer 3s linear infinite"},
-  subtitle:  {fontSize:"clamp(14px,2vw,17px)",color:"#8a8070",maxWidth:580,margin:"0 auto 36px",lineHeight:1.8},
-  ctaBtn:    {background:"linear-gradient(135deg,#D4AF37,#F5D76E)",color:"#1a1a0a",border:"none",borderRadius:14,padding:"14px 32px",fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:16,cursor:"pointer",transition:"all .2s",boxShadow:"0 8px 32px rgba(212,175,55,.25)"},
-  ctaGhost:  {background:"transparent",border:"1px solid rgba(212,175,55,.3)",color:"#D4AF37",borderRadius:14,padding:"14px 28px",fontFamily:"'Inter',sans-serif",fontSize:15,cursor:"pointer"},
-  mockupWrap:{marginTop:60,display:"flex",justifyContent:"center"},
-  mockup:    {background:"rgba(255,255,255,.03)",border:"1px solid rgba(212,175,55,.15)",borderRadius:24,padding:20,width:"100%",maxWidth:340,boxShadow:"0 40px 100px rgba(0,0,0,.6)"},
-  mockupHeader:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16},
-  mockupStats:{display:"flex",gap:8,marginBottom:16},
-  mockupStat:{flex:1,background:"rgba(212,175,55,.06)",border:"1px solid rgba(212,175,55,.1)",borderRadius:10,padding:"10px 8px",textAlign:"center"},
-  mockupCard:{background:"rgba(255,255,255,.02)",border:"1px solid rgba(255,255,255,.06)",borderRadius:12,padding:"12px 14px",marginBottom:8},
-  features:  {padding:"80px 40px",position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto"},
-  featTitle: {fontFamily:"'Cormorant Garamond',serif",fontWeight:800,fontSize:"clamp(28px,4vw,48px)",textAlign:"center",marginBottom:48,color:"#F5F0E8"},
-  featGrid:  {display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:20},
-  featCard:  {background:"rgba(255,255,255,.02)",border:"1px solid rgba(212,175,55,.1)",borderRadius:18,padding:"28px 24px",transition:"all .25s",cursor:"default"},
-  featIcon:  {fontSize:32,marginBottom:14},
-  ctaSection:{padding:"80px 20px",display:"flex",justifyContent:"center",position:"relative",zIndex:1},
-  ctaBox:    {background:"rgba(212,175,55,.05)",border:"1px solid rgba(212,175,55,.2)",borderRadius:24,padding:"60px 40px",display:"flex",flexDirection:"column",alignItems:"center",maxWidth:600,width:"100%"},
-  footer:    {textAlign:"center",padding:"40px 20px",borderTop:"1px solid rgba(212,175,55,.1)",position:"relative",zIndex:1},
+  page:    {background:"#080D0A",minHeight:"100vh",color:"#F0FFF8",position:"relative",overflowX:"hidden"},
+  nav:     {display:"flex",justifyContent:"space-between",alignItems:"center",padding:"20px 32px",position:"sticky",top:0,background:"rgba(8,13,10,0.95)",backdropFilter:"blur(20px)",borderBottom:"1px solid rgba(0,255,136,0.08)",zIndex:10},
+  navBtn:  {background:"transparent",border:"1px solid rgba(0,255,136,0.2)",color:"#00FF88",borderRadius:10,padding:"9px 20px",fontFamily:"'DM Sans',sans-serif",fontSize:13,cursor:"pointer",transition:"all 0.3s",letterSpacing:1},
+  hero:    {textAlign:"center",padding:"80px 24px 60px",position:"relative",zIndex:1},
+  title:   {fontFamily:"'Cormorant Garamond',serif",fontWeight:300,fontSize:"clamp(40px,7vw,72px)",lineHeight:1.15,color:"#F0FFF8",marginBottom:20,letterSpacing:-1},
+  subtitle:{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(15px,2vw,18px)",color:"#4a7a5a",lineHeight:1.7,maxWidth:560,margin:"0 auto 32px",fontWeight:300},
+  ctaBtn:  {background:"linear-gradient(135deg,#00FF88,#00FFCC)",color:"#050D08",border:"none",borderRadius:14,padding:"15px 32px",fontFamily:"'DM Sans',sans-serif",fontWeight:600,fontSize:16,cursor:"pointer",transition:"all 0.3s",letterSpacing:0.5},
+  ctaGhost:{background:"transparent",border:"1px solid rgba(0,255,136,0.2)",color:"#00FF88",borderRadius:14,padding:"15px 28px",fontFamily:"'DM Sans',sans-serif",fontSize:15,cursor:"pointer",transition:"all 0.3s"},
+  features:{padding:"60px 24px",position:"relative",zIndex:1},
+  feat:    {background:"rgba(0,255,136,0.02)",border:"1px solid rgba(0,255,136,0.1)",borderRadius:16,padding:"28px 24px",cursor:"default"},
+  ctaSection:{padding:"40px 24px 60px",position:"relative",zIndex:1},
+  footer:  {textAlign:"center",padding:"28px 24px",borderTop:"1px solid rgba(0,255,136,0.08)"},
 };
