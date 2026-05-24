@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 const STORAGE_KEY = "factures-v2";
 const SUPABASE_URL = "https://jihdihqgyvtzboqwuzmr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ka55PSizlDfG0-X1FQxuTg_7m9ARn86";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppaGRpaHFneXZ0emJvcXd1em1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMjc4NjIsImV4cCI6MjA5MzkwMzg2Mn0.Bs8d_crq6hKkAYQlXR2CCZdCk4HoLKgTNMgU-kla714";
 
 const statusColors = {
   impayee:        { bg: "rgba(252,129,129,0.15)", text: "#FC8181", dot: "#FC8181" },
@@ -50,19 +50,16 @@ export default function App({ user, onLogout }) {
   const annexeFileRef = useRef();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const r = await window.storage.get(STORAGE_KEY);
-        if (r?.value) setFactures(JSON.parse(r.value));
-      } catch {}
-    })();
-  }, []);
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) setFactures(JSON.parse(data));
+  } catch {}
+}, []);
 
-  const save = (data) => {
-    setFactures(data);
-    window.storage.set(STORAGE_KEY, JSON.stringify(data)).catch(() => {});
-  };
-
+const save = (data) => {
+  setFactures(data);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+};
   const showToast = (msg, type = "ok") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
@@ -119,7 +116,6 @@ export default function App({ user, onLogout }) {
     try {
       const compressed = await compressImage(previewImg);
       const base64 = compressed.split(",")[1];
-      const mediaType = "image/jpeg";
       const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-facture`, {
         method: "POST",
         headers: {
@@ -131,18 +127,17 @@ export default function App({ user, onLogout }) {
       const parsed = await res.json();
       if (parsed.error) throw new Error(parsed.error);
       setScanResult(parsed);
-      setForm(prev => ({
-        ...prev,
+      setForm({
         fournisseur: parsed.fournisseur || "",
         description: parsed.description || "",
         montant: parsed.montant != null ? String(parsed.montant) : "",
         date: parsed.date_echeance || parsed.date_facture || "",
         iban: parsed.iban || "",
         communication: parsed.communication || "",
-      }));
-      showToast("F:" + (parsed.fournisseur||"vide") + " M:" + (parsed.montant||"vide"));
+      });
+      showToast("Infos extraites !");
     } catch (err) {
-      showToast("Erreur scan: " + err.message, "err");
+      showToast("Erreur: " + err.message, "err");
     }
     setScanning(false);
   };
