@@ -353,16 +353,16 @@ export default function App({ user, onLogout }) {
         {/* LIST */}
         {view === "list" && !loading && (
           <div style={{animation:"up .3s ease"}}>
-            <div style={S.statsRow}>
+            {!dossierFilter && <div style={S.statsRow}>
               <div style={S.stat}><div style={S.statL}>A payer</div><div style={S.statV}>{fmt(totalImpaye)}</div></div>
               <div style={S.stat}><div style={S.statL}>Factures</div><div style={S.statV}>{factures.length}</div></div>
               <div style={{...S.stat,...(urgentes.length>0?{background:"rgba(252,129,129,.1)",borderColor:"rgba(252,129,129,.3)"}:{})}}>
                 <div style={S.statL}>Urgentes</div>
                 <div style={{...S.statV,color:urgentes.length>0?"#FC8181":undefined}}>{urgentes.length}</div>
               </div>
-            </div>
+            </div>}
 
-            {dossiers.length > 0 && (
+            {dossiers.length > 0 && !dossierFilter && (
               <div style={{marginBottom:20}}>
                 <div style={S.secLabel}>Dossiers fournisseurs</div>
                 <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:6}}>
@@ -410,7 +410,7 @@ export default function App({ user, onLogout }) {
               ))}
             </div>
 
-            <div style={S.secLabel}>Toutes les factures</div>
+            <div style={S.secLabel}>{dossierFilter ? `Factures — ${dossierFilter}` : "Toutes les factures"}</div>
 
             {listeAffichee.length === 0 ? (
               <div style={S.empty}>
