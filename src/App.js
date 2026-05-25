@@ -48,6 +48,8 @@ export default function App({ user, onLogout }) {
   const [copied, setCopied] = useState(null);
   const [search, setSearch] = useState("");
   const [filterStatut, setFilterStatut] = useState("tous");
+  const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const fileRef = useRef();
   const cameraRef = useRef();
   const annexeFileRef = useRef();
@@ -58,8 +60,17 @@ export default function App({ user, onLogout }) {
         const { data, error } = await supabase.from("factures").select("*").order("created_at", { ascending: false });
         if (!error && data) setFactures(data.map(row => ({ ...row.data, id: row.id })));
       } catch {}
+      setLoading(false);
+      try {
+        if (!localStorage.getItem("payday-onboarded")) setShowOnboarding(true);
+      } catch {}
     })();
   }, []);
+
+  const closeOnboarding = () => {
+    setShowOnboarding(false);
+    try { localStorage.setItem("payday-onboarded", "1"); } catch {}
+  };
 
   const save = (data) => {
     setFactures(data);
@@ -156,7 +167,8 @@ export default function App({ user, onLogout }) {
       });
       showToast("Infos extraites !");
     } catch (err) {
-      showToast("Erreur: " + err.message, "err");
+      setScanResult({ failed: true });
+      showToast("Lecture impossible — remplissez à la main", "err");
     }
     setScanning(false);
   };
@@ -254,6 +266,7 @@ export default function App({ user, onLogout }) {
         @keyframes tin{from{transform:translateY(70px);opacity:0}to{transform:translateY(0);opacity:1}}
         @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
         .hov:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)!important}
         .btn:hover{filter:brightness(1.1)}
         input,select{outline:none}
@@ -295,8 +308,16 @@ export default function App({ user, onLogout }) {
 
       <div style={S.content}>
 
+        {/* LOADING */}
+        {view === "list" && loading && (
+          <div style={{textAlign:"center",padding:"80px 20px"}}>
+            <div style={{width:40,height:40,border:"3px solid rgba(0,255,136,0.15)",borderTopColor:"#00FF88",borderRadius:"50%",margin:"0 auto",animation:"spin 0.8s linear infinite"}}/>
+            <div style={{color:"#4a7a5a",fontSize:13,marginTop:16,fontFamily:"'DM Sans',sans-serif"}}>Chargement de vos factures...</div>
+          </div>
+        )}
+
         {/* LIST */}
-        {view === "list" && (
+        {view === "list" && !loading && (
           <div style={{animation:"up .3s ease"}}>
             <div style={S.statsRow}>
               <div style={S.stat}><div style={S.statL}>A payer</div><div style={S.statV}>{fmt(totalImpaye)}</div></div>
@@ -407,7 +428,13 @@ export default function App({ user, onLogout }) {
                   </button>
                 )}
                 {scanning && <div style={{textAlign:"center",color:"#00FF88",padding:"12px 0",animation:"pulse 1.2s infinite"}}>Analyse en cours...</div>}
-                {scanResult && <div style={{textAlign:"center",color:"#68D391",padding:"8px 0",fontSize:13}}>Informations extraites ✓</div>}
+                {scanResult && !scanResult.failed && <div style={{textAlign:"center",color:"#68D391",padding:"8px 0",fontSize:13}}>Informations extraites ✓</div>}
+                {scanResult && scanResult.failed && (
+                  <div style={{textAlign:"center",padding:"8px 0"}}>
+                    <div style={{color:"#FC8181",fontSize:13,marginBottom:8}}>Lecture impossible</div>
+                    <button style={{...S.ghostBtn,padding:"8px 16px",fontSize:13}} className="btn" onClick={() => {setScanResult(null);scanFacture();}}>Réessayer le scan</button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -710,6 +737,37 @@ export default function App({ user, onLogout }) {
                 if(val){updateFacture(currentFacture.id,{rappel:val,rappelJours:null});setRappelModal(false);showToast(`Rappel le ${fmtDate(val)}`);}
               }}>Confirmer</button>
             <button style={{...S.ghostBtn,width:"100%",marginTop:8}} className="btn" onClick={() => setRappelModal(false)}>Annuler</button>
+          </div>
+        </div>
+      )}
+
+      {/* ONBOARDING */}
+      {showOnboarding && (
+        <div style={S.overlay} onClick={closeOnboarding}>
+          <div style={{...S.modal,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+            <div style={{fontSize:48,marginBottom:16}}>👋</div>
+            <div style={{...S.modalTitle,textAlign:"center"}}>Bienvenue sur PayDay !</div>
+            <div style={{color:"#4a7a5a",fontSize:14,marginBottom:24,lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>
+              Prenez une photo de vos factures papier — PayDay extrait automatiquement le montant, la date d'échéance et l'IBAN.
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24,textAlign:"left"}}>
+              {[
+                ["📸","Photographiez votre facture"],
+                ["✨","Les infos se remplissent toutes seules"],
+                ["🔔","Recevez des rappels avant l'échéance"],
+              ].map(([icon,txt]) => (
+                <div key={txt} style={{display:"flex",alignItems:"center",gap:12,background:"rgba(0,255,136,0.04)",borderRadius:10,padding:"12px 14px"}}>
+                  <span style={{fontSize:22}}>{icon}</span>
+                  <span style={{fontSize:14,color:"#F0FFF8",fontFamily:"'DM Sans',sans-serif"}}>{txt}</span>
+                </div>
+              ))}
+            </div>
+            <button style={{...S.addBtn,width:"100%",padding:14}} className="btn" onClick={() => {closeOnboarding();setSourceModal(true);}}>
+              Ajouter ma première facture
+            </button>
+            <button style={{...S.ghostBtn,width:"100%",marginTop:10,color:"#4a7a5a"}} className="btn" onClick={closeOnboarding}>
+              Plus tard
+            </button>
           </div>
         </div>
       )}
