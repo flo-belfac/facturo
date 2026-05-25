@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "./supabase";
 
 const STORAGE_KEY = "payday-factures-v1";
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://jihdihqgyvtzboqwuzmr.supabase.co";
@@ -52,15 +53,28 @@ export default function App({ user, onLogout }) {
   const annexeFileRef = useRef();
 
   useEffect(() => {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data) setFactures(JSON.parse(data));
-    } catch {}
+    (async () => {
+      try {
+        const { data, error } = await supabase.from("factures").select("*").order("created_at", { ascending: false });
+        if (!error && data) setFactures(data.map(row => ({ ...row.data, id: row.id })));
+      } catch {}
+    })();
   }, []);
 
   const save = (data) => {
     setFactures(data);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  };
+
+  const syncFacture = async (facture) => {
+    try {
+      await supabase.from("factures").upsert({ id: facture.id, data: facture });
+    } catch {}
+  };
+
+  const deleteFactureCloud = async (id) => {
+    try {
+      await supabase.from("factures").delete().eq("id", id);
+    } catch {}
   };
 
   const showToast = (msg, type = "ok") => {
@@ -92,6 +106,8 @@ export default function App({ user, onLogout }) {
       const annexe = { id: Date.now(), type: "image", name: file.name, data: ev.target.result, addedAt: new Date().toISOString() };
       const updated = factures.map(f => f.id === selected.id ? { ...f, annexes: [...(f.annexes || []), annexe] } : f);
       save(updated);
+      const nf = updated.find(f => f.id === selected.id);
+      if (nf) syncFacture(nf);
       setSelected(prev => ({ ...prev, annexes: [...(prev.annexes || []), annexe] }));
       showToast("Annexe ajoutee");
     };
@@ -163,6 +179,7 @@ export default function App({ user, onLogout }) {
       createdAt: new Date().toISOString(),
     };
     save([f, ...factures]);
+    syncFacture(f);
     setView("list");
     setPreviewImg(null);
     setScanResult(null);
@@ -172,11 +189,14 @@ export default function App({ user, onLogout }) {
   const updateFacture = (id, updates) => {
     const updated = factures.map(f => f.id === id ? { ...f, ...updates } : f);
     save(updated);
+    const newFacture = updated.find(f => f.id === id);
+    if (newFacture) syncFacture(newFacture);
     if (selected?.id === id) setSelected(prev => ({ ...prev, ...updates }));
   };
 
   const supprimerFacture = (id) => {
     save(factures.filter(f => f.id !== id));
+    deleteFactureCloud(id);
     setView("list");
     showToast("Facture supprimee");
   };
