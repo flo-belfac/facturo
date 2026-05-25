@@ -11,6 +11,25 @@ const statusColors = {
   payee:           { bg: "rgba(104,211,145,0.15)",  text: "#68D391", dot: "#68D391" },
 };
 
+
+const CATEGORIES = {
+  energie:    { label: "Énergie",   color: "#FFB020", icon: "⚡", mots: ["edf","engie","luminus","total","mega","eneco","lampiris","electrabel","gaz","electricite","essent"] },
+  telecom:    { label: "Télécom",   color: "#3B82F6", icon: "📱", mots: ["proximus","orange","base","telenet","scarlet","voo","mobistar","sfr","bouygues","free","internet","mobile","gsm"] },
+  loyer:      { label: "Loyer",     color: "#A855F7", icon: "🏠", mots: ["loyer","rent","immo","agence","syndic","location","bail"] },
+  assurance:  { label: "Assurance", color: "#EF4444", icon: "🛡️", mots: ["assurance","ag","axa","ethias","baloise","allianz","p&v","assur","mutuelle","mutualite"] },
+  eau:        { label: "Eau",       color: "#06B6D4", icon: "💧", mots: ["eau","swde","vivaqua","water","cile","inasep"] },
+  abonnement: { label: "Abonnement",color: "#EC4899", icon: "🔄", mots: ["netflix","spotify","amazon","disney","abonnement","subscription","apple","google","microsoft"] },
+  autre:      { label: "Autre",     color: "#64748B", icon: "📄", mots: [] },
+};
+
+function detectCategorie(fournisseur, description) {
+  const txt = `${fournisseur} ${description}`.toLowerCase();
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    if (cat.mots.some(m => txt.includes(m))) return key;
+  }
+  return "autre";
+}
+
 const fmt = (a) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(a || 0);
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 const daysUntil = (d) => d ? Math.ceil((new Date(d) - new Date()) / 86400000) : null;
@@ -58,7 +77,7 @@ export default function App({ user, onLogout }) {
     (async () => {
       try {
         const { data, error } = await supabase.from("factures").select("*").order("created_at", { ascending: false });
-        if (!error && data) setFactures(data.map(row => ({ ...row.data, id: row.id })));
+        if (!error && data) setFactures(data.map(row => ({ ...row.data, id: row.id, categorie: row.data.categorie || detectCategorie(row.data.fournisseur || "", row.data.description || "") })));
       } catch {}
       setLoading(false);
       try {
@@ -174,14 +193,27 @@ export default function App({ user, onLogout }) {
   };
 
   const ajouterFacture = () => {
+    const fournisseur = form.fournisseur || "Fournisseur inconnu";
+    const montant = parseFloat(form.montant) || 0;
+    // Detection de doublon
+    const doublon = factures.find(x =>
+      x.fournisseur.toLowerCase() === fournisseur.toLowerCase() &&
+      Math.abs(x.montant - montant) < 0.01 &&
+      x.date === (form.date || null)
+    );
+    if (doublon) {
+      const ok = window.confirm("Cette facture semble déjà exister (même fournisseur, montant et date). L'ajouter quand même ?");
+      if (!ok) return;
+    }
     const f = {
       id: Date.now(),
-      fournisseur: form.fournisseur || "Fournisseur inconnu",
+      fournisseur,
       description: form.description || "",
-      montant: parseFloat(form.montant) || 0,
+      montant,
       date: form.date || null,
       iban: form.iban || null,
       communication: form.communication || null,
+      categorie: detectCategorie(fournisseur, form.description || ""),
       statut: "impayee",
       planPaiement: null,
       rappel: null,
@@ -241,10 +273,12 @@ export default function App({ user, onLogout }) {
     showToast("Plan de paiement cree");
   };
 
+  const currentYear = new Date().getFullYear();
   const dossiers = [...new Set(factures.map(f => f.fournisseur))].map(name => ({
     name,
     factures: factures.filter(f => f.fournisseur === name),
     total: factures.filter(f => f.fournisseur === name && f.statut !== "payee").reduce((s, f) => s + f.montant, 0),
+    totalAnnuel: factures.filter(f => f.fournisseur === name && new Date(f.createdAt).getFullYear() === currentYear).reduce((s, f) => s + f.montant, 0),
   }));
 
   const listeAffichee = (dossierFilter ? factures.filter(f => f.fournisseur === dossierFilter) : factures)
@@ -336,7 +370,8 @@ export default function App({ user, onLogout }) {
                     <button key={d.name} style={S.chip} className="btn" onClick={() => setDossierFilter(d.name)}>
                       <span style={{fontWeight:700,fontSize:13,color:"#F5F0E8"}}>{d.name}</span>
                       <span style={{fontSize:11,color:"#8a8070",marginTop:2}}>{d.factures.length} facture{d.factures.length>1?"s":""}</span>
-                      {d.total > 0 && <span style={{fontSize:12,color:"#FC8181",marginTop:1}}>{fmt(d.total)}</span>}
+                      {d.total > 0 && <span style={{fontSize:12,color:"#FC8181",marginTop:1}}>{fmt(d.total)} dû</span>}
+                      <span style={{fontSize:10,color:"#4a7a5a",marginTop:1}}>{fmt(d.totalAnnuel)} en {currentYear}</span>
                     </button>
                   ))}
                 </div>
@@ -397,10 +432,17 @@ export default function App({ user, onLogout }) {
                     </div>
                     {f.description && <div style={{fontSize:13,color:"#8a8070",marginBottom:8}}>{f.description}</div>}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
-                      <span style={{...S.badge,...(statusColors[f.statut]||statusColors.impayee)}}>
-                        <span style={{width:6,height:6,borderRadius:"50%",background:(statusColors[f.statut]||statusColors.impayee)?.dot,display:"inline-block",marginRight:5}}/>
-                        {f.statut}
-                      </span>
+                      <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                        <span style={{...S.badge,...(statusColors[f.statut]||statusColors.impayee)}}>
+                          <span style={{width:6,height:6,borderRadius:"50%",background:(statusColors[f.statut]||statusColors.impayee)?.dot,display:"inline-block",marginRight:5}}/>
+                          {f.statut}
+                        </span>
+                        {f.categorie && CATEGORIES[f.categorie] && (
+                          <span style={{fontSize:10,padding:"3px 8px",borderRadius:20,background:CATEGORIES[f.categorie].color+"22",color:CATEGORIES[f.categorie].color,fontWeight:600}}>
+                            {CATEGORIES[f.categorie].icon} {CATEGORIES[f.categorie].label}
+                          </span>
+                        )}
+                      </div>
                       <div style={{display:"flex",gap:8,alignItems:"center"}}>
                         {f.annexes?.length > 0 && <span style={{fontSize:11,color:"#8a8070"}}>📎 {f.annexes.length}</span>}
                         {f.rappel && <span style={{fontSize:13,color:"#00FF88"}}>🔔</span>}
