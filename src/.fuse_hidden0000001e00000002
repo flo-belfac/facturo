@@ -885,5 +885,4 @@ const S = {
   overlay:   {position:"fixed",inset:0,background:"rgba(0,0,0,.8)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"},
   modal:     {background:"#141408",border:"1px solid rgba(0,255,136,.15)",borderRadius:"18px 18px 0 0",padding:"22px 18px 36px",width:"100%",maxWidth:430},
   modalTitle:{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:20,marginBottom:8,color:"#F5F0E8"},
-  srcBtn:    {display:"flex",alignItems:"center",gap:14,width:"100%",padding:"15px",borderRadius:13,marginBottom:9,textAlign:"left",cursor:"pointer",background:"rgba(0,255,136,.04)",border:"1px solid rgba(0,255,136,.1)",transition:"all .2s"},
-};
+  srcBtn:    {display:"flex",alignItems:"center",gap:14,width:"100%",padding:"15px",borderRadius:13,marginBottom:9,textAlign:"left",cursor:"pointer",background:"rgba(0,255,136,.04)",border:"1px solid rg
