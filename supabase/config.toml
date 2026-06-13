@@ -1,4 +1,11 @@
 
+[functions.send-rappels]
+enabled = true
+# Appelée par la tâche cron (pas par un utilisateur connecté) -> pas de JWT.
+# La sécurité est assurée par l'en-tête secret x-cron-secret (voir la fonction).
+verify_jwt = false
+entrypoint = "./functions/send-rappels/index.ts"
+
 [functions.scan-facture]
 enabled = true
 verify_jwt = true

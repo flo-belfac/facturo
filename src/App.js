@@ -165,11 +165,13 @@ export default function App({ user, onLogout }) {
     try {
       const compressed = await compressImage(previewImg);
       const base64 = compressed.split(",")[1];
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-facture`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Authorization": `Bearer ${session?.access_token}`,
+          "apikey": SUPABASE_KEY,
         },
         body: JSON.stringify({ image: base64, mediaType: "image/jpeg" })
       });
