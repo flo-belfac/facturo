@@ -66,6 +66,12 @@ l'utilisateur ne le sait pas.
 
 ### Produit (valeur utilisateur)
 
+**QR de paiement SEPA** — `P1` · `S` · ✅ fait (code, à déployer)
+QR EPC069-12 dans l'onglet Virement : scan avec l'app bancaire → virement pré-rempli.
+- ✅ Composant `src/SepaQR.js` + intégration `src/App.js` + dépendance `qrcode`
+- ⬜ Commit/push (Vercel installe `qrcode` au build) puis tester un scan
+
+
 **Factures récurrentes** — `P1` · `M`
 Loyer, abonnements, assurances reviennent chaque mois.
 - Marquer une facture comme « mensuelle / périodique »

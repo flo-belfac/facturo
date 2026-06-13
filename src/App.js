@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabase";
+import SepaQR from "./SepaQR";
 
 const STORAGE_KEY = "payday-factures-v1";
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://jihdihqgyvtzboqwuzmr.supabase.co";
@@ -610,6 +611,8 @@ export default function App({ user, onLogout }) {
                 <div style={{...S.block,background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.15)",borderRadius:14,padding:"16px 16px 10px"}}>
                   <div style={{...S.blockTitle,marginBottom:4}}>Infos pour le virement</div>
                   <div style={{fontSize:12,color:"#8a8070",marginBottom:16}}>Appuyez sur Copier puis collez dans votre app bancaire</div>
+
+                  <SepaQR facture={f} />
 
                   {[
                     {label:"Beneficiaire", value:f.fournisseur, k:"ben"},
