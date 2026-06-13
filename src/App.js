@@ -319,7 +319,7 @@ export default function App({ user, onLogout }) {
             }}>←</button>
           )}
           <div style={{animation:"float 4s ease-in-out infinite"}}>
-            <div style={{...S.logo,background:"linear-gradient(90deg,#00FF88,#00FFCC,#00FF88)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:"shimmer 2s linear infinite"}}>PayDay</div>
+            <div style={{...S.logo,background:"linear-gradient(90deg,#00FF88,#00FFCC,#00FF88)",backgroundSize:"200% auto",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:"shimmer 2s linear infinite"}}>Factura</div>
             {view === "list" && !dossierFilter && <div style={S.sub}>Vos factures, sous contrôle</div>}
             {dossierFilter && <div style={S.sub}>📁 {dossierFilter}</div>}
           </div>
@@ -790,9 +790,9 @@ export default function App({ user, onLogout }) {
         <div style={S.overlay} onClick={closeOnboarding}>
           <div style={{...S.modal,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
             <div style={{fontSize:48,marginBottom:16}}>👋</div>
-            <div style={{...S.modalTitle,textAlign:"center"}}>Bienvenue sur PayDay !</div>
+            <div style={{...S.modalTitle,textAlign:"center"}}>Bienvenue sur Factura !</div>
             <div style={{color:"#4a7a5a",fontSize:14,marginBottom:24,lineHeight:1.6,fontFamily:"'DM Sans',sans-serif"}}>
-              Prenez une photo de vos factures papier — PayDay extrait automatiquement le montant, la date d'échéance et l'IBAN.
+              Prenez une photo de vos factures papier — Factura extrait automatiquement le montant, la date d'échéance et l'IBAN.
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:24,textAlign:"left"}}>
               {[

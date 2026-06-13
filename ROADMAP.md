@@ -1,4 +1,4 @@
-# PayDay / facturo — Roadmap & backlog
+# Factura / facturo — Roadmap & backlog
 
 Dernière mise à jour : 2026-06-13
 
@@ -39,13 +39,12 @@ Tout est détaillé dans **`RAPPELS_SETUP.md`**.
 
 ### Sécurité / coûts
 
-**Sécuriser la fonction `scan-facture`** — `P1` · `M` · 🟡 prêt à déployer
+**Sécuriser la fonction `scan-facture`** — `P1` · `M` · ✅ fait (déployé & testé)
 Elle était appelable avec la clé `anon` publique → risque qu'on brûle tes crédits OpenAI.
-Code écrit ; reste à déployer (voir **`SECURITE_SCAN.md`**).
-- 🟡 Exiger un vrai utilisateur connecté (token de session, plus la clé anon) — fonction + `src/App.js`
-- 🟡 Limite de 30 scans / utilisateur / jour — `supabase/migrations/20260614_scan_rate_limit.sql`
-- ⬜ Déployer (ordre : SQL → front → fonction) puis tester
-- ⬜ Surveiller la conso sur OpenAI → Usage
+- ✅ Exiger un vrai utilisateur connecté (token de session, plus la clé anon) — fonction + `src/App.js`
+- ✅ Limite de 30 scans / utilisateur / jour — `supabase/migrations/20260614_scan_rate_limit.sql` (exécuté)
+- ✅ Déployé (SQL → front → fonction) et scan testé en prod le 2026-06-13
+- ⬜ Surveiller la conso sur OpenAI → Usage (au fil de l'eau)
 
 ### Fiabilité / données
 

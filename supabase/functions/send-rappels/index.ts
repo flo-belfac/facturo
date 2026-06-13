@@ -25,14 +25,14 @@ function emailHtml(facture: Record<string, unknown>) {
 
   return `<!doctype html><html><body style="margin:0;background:#080D0A;font-family:Arial,Helvetica,sans-serif;color:#F5F0E8;padding:24px">
   <div style="max-width:480px;margin:0 auto;background:rgba(0,255,136,0.03);border:1px solid rgba(0,255,136,0.15);border-radius:16px;padding:28px">
-    <div style="font-size:22px;font-weight:bold;letter-spacing:2px;color:#00FF88;margin-bottom:4px">PayDay</div>
+    <div style="font-size:22px;font-weight:bold;letter-spacing:2px;color:#00FF88;margin-bottom:4px">Factura</div>
     <div style="font-size:13px;color:#8a8070;margin-bottom:24px">Rappel de paiement</div>
     <div style="font-size:18px;font-weight:bold;margin-bottom:6px">${fournisseur}</div>
     <div style="font-size:32px;font-weight:bold;color:#00FF88;margin:8px 0">${montant}</div>
     <div style="font-size:14px;color:#FC8181;margin-bottom:20px">Échéance : ${echeance}</div>
     ${iban ? `<div style="font-size:13px;color:#8a8070;margin-bottom:4px">IBAN : <span style="color:#F5F0E8">${iban}</span></div>` : ""}
     ${comm ? `<div style="font-size:13px;color:#8a8070;margin-bottom:4px">Communication : <span style="color:#F5F0E8">${comm}</span></div>` : ""}
-    <div style="margin-top:24px;font-size:12px;color:#4a7a5a">Cet email vous est envoyé automatiquement par PayDay parce que vous avez programmé un rappel pour cette facture.</div>
+    <div style="margin-top:24px;font-size:12px;color:#4a7a5a">Cet email vous est envoyé automatiquement par Factura parce que vous avez programmé un rappel pour cette facture.</div>
   </div>
 </body></html>`;
 }
@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
     const resendKey = Deno.env.get("RESEND_API_KEY");
-    const fromEmail = Deno.env.get("RAPPELS_FROM_EMAIL") || "PayDay <onboarding@resend.dev>";
+    const fromEmail = Deno.env.get("RAPPELS_FROM_EMAIL") || "Factura <onboarding@resend.dev>";
     if (!resendKey) throw new Error("RESEND_API_KEY manquant");
 
     const today = new Date().toISOString().split("T")[0];

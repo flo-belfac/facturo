@@ -94,7 +94,7 @@ export default function Login() {
             animation:"shimmer 3s linear infinite",
             textTransform:"uppercase",
             marginBottom:8,
-          }}>PayDay</h1>
+          }}>Factura</h1>
           <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"#2a6a50",letterSpacing:3,textTransform:"uppercase",fontWeight:300}}>
             Gestion de factures
           </p>

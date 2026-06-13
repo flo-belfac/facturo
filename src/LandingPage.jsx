@@ -48,7 +48,7 @@ export default function LandingPage({ onStart }) {
             WebkitTextFillColor:"transparent",
             backgroundClip:"text",
             animation:"shimmer 2s linear infinite",
-          }}>PayDay</div>
+          }}>Factura</div>
         </div>
         <button onClick={onStart} style={S.navBtn}>Connexion</button>
       </nav>
@@ -96,7 +96,7 @@ export default function LandingPage({ onStart }) {
         </h1>
 
         <p style={{...S.subtitle,animation:"fadeUp 0.8s 0.2s ease both"}}>
-          Photographiez vos factures papier — PayDay extrait tout automatiquement.<br/>
+          Photographiez vos factures papier — Factura extrait tout automatiquement.<br/>
           Rappels, plans de paiement, virements simplifiés.
         </p>
 
@@ -129,7 +129,7 @@ export default function LandingPage({ onStart }) {
 
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:16,maxWidth:900,margin:"0 auto"}}>
           {[
-            {icon:"📸",title:"Scan automatique",desc:"Prenez une photo — PayDay lit la facture et remplit tout en quelques secondes."},
+            {icon:"📸",title:"Scan automatique",desc:"Prenez une photo — Factura lit la facture et remplit tout en quelques secondes."},
             {icon:"📁",title:"Dossiers fournisseurs",desc:"Toutes vos factures organisées par fournisseur automatiquement."},
             {icon:"🔔",title:"Rappels intelligents",desc:"Ne plus jamais oublier une échéance. Définissez vos rappels en 1 clic."},
             {icon:"💳",title:"Virement simplifié",desc:"Copiez IBAN et communication en un tap. Collez dans votre app bancaire."},
@@ -150,7 +150,7 @@ export default function LandingPage({ onStart }) {
         <div style={{background:"rgba(0,255,136,0.04)",border:"1px solid rgba(0,255,136,0.15)",borderRadius:24,padding:"48px 32px",textAlign:"center",maxWidth:600,margin:"0 auto",position:"relative",overflow:"hidden",animation:"glow 4s ease-in-out infinite"}}>
           <div style={{position:"absolute",inset:0,background:"radial-gradient(circle at 50% 0%,rgba(0,255,136,0.08),transparent 60%)"}}/>
           <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:700,fontSize:36,color:"#F0FFF8",marginBottom:12,position:"relative"}}>
-            Essayez PayDay gratuitement
+            Essayez Factura gratuitement
           </h2>
           <p style={{color:"#4a7a5a",fontSize:15,marginBottom:28,fontFamily:"'DM Sans',sans-serif",position:"relative"}}>
             Gratuit pendant 3 mois, puis 4,99€/mois.<br/>Annulation à tout moment.
@@ -172,8 +172,8 @@ export default function LandingPage({ onStart }) {
           WebkitTextFillColor:"transparent",
           backgroundClip:"text",
           marginBottom:8,
-        }}>PayDay</div>
-        <div style={{fontSize:12,color:"#2a4a38",fontFamily:"'DM Sans',sans-serif"}}>© 2026 PayDay — Vos factures, sous contrôle.</div>
+        }}>Factura</div>
+        <div style={{fontSize:12,color:"#2a4a38",fontFamily:"'DM Sans',sans-serif"}}>© 2026 Factura — Vos factures, sous contrôle.</div>
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
 # Mise en place des rappels par email
 
-Objectif : chaque matin (~8h), PayDay envoie un email pour chaque facture dont la date
+Objectif : chaque matin (~8h), Factura envoie un email pour chaque facture dont la date
 de rappel tombe ce jour-là et qui n'est pas encore payée.
 
 Pièces livrées :
@@ -15,13 +15,13 @@ Il reste **5 étapes** à faire une seule fois. Compte ~15 minutes.
 ## Étape 1 — Créer un compte Resend (service d'envoi d'emails)
 
 1. Va sur https://resend.com et crée un compte gratuit (100 emails/jour, largement suffisant).
-2. Menu **API Keys** → **Create API Key** → donne-lui un nom (ex. « PayDay ») → copie la clé
+2. Menu **API Keys** → **Create API Key** → donne-lui un nom (ex. « Factura ») → copie la clé
    (elle commence par `re_…`). **Garde-la de côté**, on s'en sert à l'étape 2.
 
 > Note : par défaut, Resend ne laisse envoyer **que vers ta propre adresse** (celle du compte),
 > depuis l'expéditeur `onboarding@resend.dev`. C'est parfait pour ton usage perso.
 > Si un jour d'autres personnes utilisent l'app, il faudra **vérifier un domaine** dans Resend
-> (menu Domains) et renseigner le secret `RAPPELS_FROM_EMAIL` (ex. `PayDay <rappels@tondomaine.com>`).
+> (menu Domains) et renseigner le secret `RAPPELS_FROM_EMAIL` (ex. `Factura <rappels@tondomaine.com>`).
 
 ## Étape 2 — Définir les secrets côté Supabase
 
@@ -34,7 +34,7 @@ Ajoute :
 | `CRON_SECRET` | un mot de passe au hasard que tu inventes (ex. `payday-7h2k9x`) — note-le, il sert à l'étape 4 |
 
 > `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` sont déjà fournis automatiquement, rien à faire.
-> `RAPPELS_FROM_EMAIL` est optionnel (défaut : `PayDay <onboarding@resend.dev>`).
+> `RAPPELS_FROM_EMAIL` est optionnel (défaut : `Factura <onboarding@resend.dev>`).
 
 ## Étape 3 — Déployer la fonction
 
