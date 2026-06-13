@@ -50,6 +50,34 @@ function computeRappelDate(dueDate, daysBefore) {
   return d.toISOString().split("T")[0];
 }
 
+function addMonths(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + n);
+  return d.toISOString().split("T")[0];
+}
+
+// Genere les occurrences manquantes des factures mensuelles (echeance passee, sans doublon).
+function genererRecurrences(list) {
+  const today = new Date().toISOString().split("T")[0];
+  const news = [];
+  const all = [...list];
+  list.filter(f => f.recurrence === "mensuelle" && f.date).forEach(f => {
+    const aSuccesseur = all.some(x => x.id !== f.id && x.fournisseur === f.fournisseur && x.date && x.date > f.date);
+    if (aSuccesseur) return;
+    let cursor = f.date, guard = 0;
+    while (guard < 24) {
+      const next = addMonths(cursor, 1);
+      if (next > today) break;
+      if (!all.some(x => x.fournisseur === f.fournisseur && x.date === next)) {
+        const nf = { ...f, id: Date.now() + guard * 7 + Math.floor(Math.random() * 1000), date: next, statut: "impayee", rappel: null, rappelJours: null, planPaiement: null, annexes: [], rappel_envoye: undefined, createdAt: new Date().toISOString() };
+        news.push(nf); all.push(nf);
+      }
+      cursor = next; guard++;
+    }
+  });
+  return news;
+}
+
 export default function App({ user, onLogout }) {
   const [factures, setFactures] = useState([]);
   const [view, setView] = useState("list");
@@ -70,6 +98,8 @@ export default function App({ user, onLogout }) {
   const [filterStatut, setFilterStatut] = useState("tous");
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({ fournisseur:"", description:"", montant:"", date:"", iban:"", communication:"" });
   const fileRef = useRef();
   const cameraRef = useRef();
   const annexeFileRef = useRef();
@@ -78,7 +108,12 @@ export default function App({ user, onLogout }) {
     (async () => {
       try {
         const { data, error } = await supabase.from("factures").select("*").eq("user_id", user?.id).order("created_at", { ascending: false });
-        if (!error && data) setFactures(data.map(row => ({ ...row.data, id: row.id, categorie: row.data.categorie || detectCategorie(row.data.fournisseur || "", row.data.description || "") })));
+        if (!error && data) {
+          let list = data.map(row => ({ ...row.data, id: row.id, categorie: row.data.categorie || detectCategorie(row.data.fournisseur || "", row.data.description || "") }));
+          const news = genererRecurrences(list);
+          if (news.length) { list = [...news, ...list]; news.forEach(syncFacture); }
+          setFactures(list);
+        }
       } catch {}
       setLoading(false);
       try {
@@ -246,6 +281,52 @@ export default function App({ user, onLogout }) {
     deleteFactureCloud(id);
     setView("list");
     showToast("Facture supprimee");
+  };
+
+  const openEdit = (f) => {
+    if (!f) return;
+    setEditForm({ fournisseur: f.fournisseur||"", description: f.description||"", montant: f.montant!=null?String(f.montant):"", date: f.date||"", iban: f.iban||"", communication: f.communication||"" });
+    setEditModal(true);
+  };
+  const saveEdit = () => {
+    if (!selected) return;
+    const montant = parseFloat(editForm.montant) || 0;
+    updateFacture(selected.id, {
+      fournisseur: editForm.fournisseur || "Fournisseur inconnu",
+      description: editForm.description || "",
+      montant,
+      date: editForm.date || null,
+      iban: editForm.iban || null,
+      communication: editForm.communication || null,
+      categorie: detectCategorie(editForm.fournisseur||"", editForm.description||""),
+    });
+    setEditModal(false);
+    showToast("Facture modifiee");
+  };
+  const toggleRecurrence = (f) => {
+    const on = f.recurrence === "mensuelle";
+    updateFacture(f.id, { recurrence: on ? null : "mensuelle" });
+    showToast(on ? "Recurrence desactivee" : "Facture marquee mensuelle");
+  };
+  const genererProchaine = (f) => {
+    if (!f.date) { showToast("Ajoutez une date d'echeance d'abord", "err"); return; }
+    const next = addMonths(f.date, 1);
+    const nf = { ...f, id: Date.now(), date: next, statut: "impayee", rappel: null, rappelJours: null, planPaiement: null, annexes: [], rappel_envoye: undefined, createdAt: new Date().toISOString() };
+    save([nf, ...factures]);
+    syncFacture(nf);
+    showToast("Facture du mois prochain creee");
+  };
+  const exportCSV = () => {
+    const esc = (v) => `"${String(v==null?"":v).replace(/"/g,'""')}"`;
+    const header = ["Fournisseur","Description","Montant","Echeance","Statut","Categorie","IBAN","Communication"];
+    const lignes = [header.join(";")];
+    factures.forEach(f => lignes.push([f.fournisseur, f.description, (f.montant||0).toFixed(2), f.date||"", f.statut, (CATEGORIES[f.categorie]&&CATEGORIES[f.categorie].label)||f.categorie||"", f.iban||"", f.communication||""].map(esc).join(";")));
+    const blob = new Blob(["\ufeff"+lignes.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `factura-export-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast("Export CSV genere");
   };
 
   const copyToClipboard = (text, label) => {
@@ -590,6 +671,23 @@ export default function App({ user, onLogout }) {
                     </div>
                   )}
 
+                  <div style={S.block}>
+                    <div style={S.blockTitle}>Facture mensuelle</div>
+                    {f.recurrence === "mensuelle" ? (
+                      <div>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.2)",borderRadius:11,padding:"12px 14px"}}>
+                          <div style={{color:"#00FF88",fontSize:14}}>Régénérée chaque mois</div>
+                          <button style={{background:"transparent",border:"none",color:"#FC8181",fontSize:18,cursor:"pointer"}} onClick={() => toggleRecurrence(f)}>✕</button>
+                        </div>
+                        <button style={{...S.ghostBtn,width:"100%",marginTop:8,fontSize:13}} className="btn" onClick={() => genererProchaine(f)}>Générer la facture du mois prochain</button>
+                      </div>
+                    ) : (
+                      <button style={{...S.ghostBtn,width:"100%"}} className="btn" onClick={() => toggleRecurrence(f)}>+ Marquer comme mensuelle</button>
+                    )}
+                  </div>
+
+                  <button style={{...S.ghostBtn,width:"100%",marginBottom:6}} className="btn" onClick={() => openEdit(f)}>Éditer la facture</button>
+
                   <div style={{display:"flex",gap:10,marginTop:8}}>
                     {f.statut !== "payee" ? (
                       <button style={{...S.addBtn,flex:1,padding:13}} className="btn" onClick={() => { updateFacture(f.id,{statut:"payee"}); showToast("Facture payee"); }}>
@@ -713,13 +811,65 @@ export default function App({ user, onLogout }) {
             </div>
           );
         })()}
+
+        {view === "stats" && (
+          <div style={{animation:"up .3s ease"}}>
+            <div style={S.pageTitle}>Statistiques</div>
+            <div style={S.statsRow}>
+              <div style={S.stat}><div style={S.statL}>A payer</div><div style={S.statV}>{fmt(totalImpaye)}</div></div>
+              <div style={S.stat}><div style={S.statL}>Payé</div><div style={S.statV}>{fmt(factures.filter(f=>f.statut==="payee").reduce((s,f)=>s+f.montant,0))}</div></div>
+              <div style={S.stat}><div style={S.statL}>Factures</div><div style={S.statV}>{factures.length}</div></div>
+            </div>
+
+            <div style={S.secLabel}>Par catégorie</div>
+            {(() => {
+              const parCat = {};
+              factures.forEach(f => { const k=f.categorie||"autre"; parCat[k]=(parCat[k]||0)+(f.montant||0); });
+              const entries = Object.entries(parCat).sort((a,b)=>b[1]-a[1]);
+              const maxv = Math.max(1, ...entries.map(e=>e[1]));
+              return entries.length===0 ? <div style={{color:"#6B7280",fontSize:13,marginBottom:16}}>Aucune donnée</div> : entries.map(([k,v]) => {
+                const cat = CATEGORIES[k] || CATEGORIES.autre;
+                return (
+                  <div key={k} style={{marginBottom:10}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                      <span>{cat.icon} {cat.label}</span><span style={{color:"#00FF88"}}>{fmt(v)}</span>
+                    </div>
+                    <div style={{height:8,background:"rgba(255,255,255,.05)",borderRadius:6,overflow:"hidden"}}>
+                      <div style={{height:"100%",width:`${Math.round(v/maxv*100)}%`,background:cat.color,borderRadius:6}}/>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+
+            <div style={{...S.secLabel,marginTop:22}}>Par mois</div>
+            {(() => {
+              const parMois = {};
+              factures.forEach(f => { if(!f.date) return; const k=f.date.slice(0,7); parMois[k]=(parMois[k]||0)+(f.montant||0); });
+              const entries = Object.entries(parMois).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,12);
+              const maxv = Math.max(1, ...entries.map(e=>e[1]));
+              return entries.length===0 ? <div style={{color:"#6B7280",fontSize:13,marginBottom:16}}>Aucune date renseignée</div> : entries.map(([k,v]) => (
+                <div key={k} style={{marginBottom:10}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                    <span>{k}</span><span style={{color:"#00FF88"}}>{fmt(v)}</span>
+                  </div>
+                  <div style={{height:8,background:"rgba(255,255,255,.05)",borderRadius:6,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${Math.round(v/maxv*100)}%`,background:"#00FF88",borderRadius:6}}/>
+                  </div>
+                </div>
+              ));
+            })()}
+
+            <button style={{...S.ghostBtn,width:"100%",marginTop:24}} className="btn" onClick={exportCSV}>Exporter en CSV</button>
+          </div>
+        )}
       </div>
 
       {/* NAV */}
       {view === "list" && !dossierFilter && (
         <div style={S.nav}>
           <button style={{...S.navBtn,color:"#00FF88"}}>⌂<br/><span style={{fontSize:10}}>Accueil</span></button>
-          <button style={S.navBtn} onClick={() => showToast(`${factures.filter(f=>f.statut!=="payee").length} factures — ${fmt(totalImpaye)} a payer`)}>
+          <button style={S.navBtn} onClick={() => setView("stats")}>
             📊<br/><span style={{fontSize:10}}>Resume</span>
           </button>
           <button style={S.navBtn} onClick={() => {
@@ -854,6 +1004,46 @@ export default function App({ user, onLogout }) {
           </div>
         </div>
       )}
+
+      {editModal && (
+        <div style={S.overlay} onClick={() => setEditModal(false)}>
+          <div style={{...S.modal,maxHeight:"85vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={S.modalTitle}>Modifier la facture</div>
+            {[
+              {k:"fournisseur",l:"Fournisseur"},
+              {k:"description",l:"Description"},
+            ].map(({k,l}) => (
+              <div key={k} style={S.fg}>
+                <label style={S.lbl}>{l}</label>
+                <input style={S.inp} value={editForm[k]} onChange={e=>setEditForm(v=>({...v,[k]:e.target.value}))} />
+              </div>
+            ))}
+            <div style={{display:"flex",gap:12}}>
+              <div style={{...S.fg,flex:1}}>
+                <label style={S.lbl}>Montant (€)</label>
+                <input style={S.inp} type="number" value={editForm.montant} onChange={e=>setEditForm(v=>({...v,montant:e.target.value}))} />
+              </div>
+              <div style={{...S.fg,flex:1}}>
+                <label style={S.lbl}>Date echeance</label>
+                <input style={S.inp} type="date" value={editForm.date} onChange={e=>setEditForm(v=>({...v,date:e.target.value}))} />
+              </div>
+            </div>
+            <div style={S.fg}>
+              <label style={S.lbl}>IBAN beneficiaire</label>
+              <input style={S.inp} placeholder="BE XX XXXX XXXX XXXX" value={editForm.iban} onChange={e=>setEditForm(v=>({...v,iban:e.target.value}))} />
+            </div>
+            <div style={S.fg}>
+              <label style={S.lbl}>Communication</label>
+              <input style={S.inp} value={editForm.communication} onChange={e=>setEditForm(v=>({...v,communication:e.target.value}))} />
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:8}}>
+              <button style={{...S.addBtn,flex:1}} className="btn" onClick={saveEdit}>Enregistrer</button>
+              <button style={{...S.ghostBtn,flex:1}} className="btn" onClick={()=>setEditModal(false)}>Annuler</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

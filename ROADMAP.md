@@ -66,23 +66,30 @@ l'utilisateur ne le sait pas.
 
 ### Produit (valeur utilisateur)
 
-**QR de paiement SEPA** — `P1` · `S` · ✅ fait (code, à déployer)
+**Éditer une facture** — `P1` · `S` · ✅ fait (code, à déployer)
+Modifier fournisseur/montant/date/IBAN/communication d'une facture existante (débloque le QR partout).
+
+
+**QR de paiement SEPA** — `P1` · `S` · ✅ fait (déployé & testé)
 QR EPC069-12 dans l'onglet Virement : scan avec l'app bancaire → virement pré-rempli.
 - ✅ Composant `src/SepaQR.js` + intégration `src/App.js` + dépendance `qrcode`
-- ⬜ Commit/push (Vercel installe `qrcode` au build) puis tester un scan
+- ✅ Déployé sur Vercel et QR testé OK le 2026-06-13
+- ⚠️ Visible seulement si la facture a un IBAN (voir « éditer IBAN » ci-dessous)
 
 
-**Factures récurrentes** — `P1` · `M`
+**Factures récurrentes** — `P1` · `M` · ✅ fait (code, à déployer)
+Marquer une facture « mensuelle » → régénération auto de l'échéance suivante + bouton manuel.
 Loyer, abonnements, assurances reviennent chaque mois.
 - Marquer une facture comme « mensuelle / périodique »
 - Régénérer automatiquement à l'échéance
 
-**Écran statistiques** — `P2` · `M`
+**Écran statistiques** — `P2` · `M` · ✅ fait (code, à déployer)
+Accessible via le bouton « Résumé » : totaux + barres par catégorie et par mois.
 - Graphe dépenses par catégorie et par mois (les catégories existent déjà)
 - Total payé / à payer sur la période
 
-**Export CSV / PDF** — `P2` · `M`
-- Export de la liste des factures en CSV (compta, impôts)
+**Export CSV / PDF** — `P2` · `M` · ✅ CSV fait (code, à déployer)
+- ✅ Export CSV (bouton dans l'écran Statistiques)
 - Récap PDF d'une facture ou d'une période
 
 **Scan plus robuste** — `P2` · `M`
